@@ -251,8 +251,7 @@ async def handle_get_ui(cell, tx: dict):
     data = tx.get("data", {})
     template = template_env.get_template("agent.html")
     host = cell.host or cell.env.get("HOST", "")
-    agent_id = app_config.get("agent_meta", {}).get("agent_id", "")
-    html = template.render(host=host, agent_id=agent_id)
+    html = template.render(host=host)
     await cell.tx_response(
         tx_id=tx.get("tx_id"),
         data={"html": html},
