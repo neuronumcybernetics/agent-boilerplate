@@ -6,7 +6,6 @@ import asyncio
 import json
 import logging
 import sqlite3
-from datetime import datetime, timezone
 from neuronum import Cell
 from model import get_model
 from jinja2 import Environment, FileSystemLoader
