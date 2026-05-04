@@ -39,7 +39,9 @@ def _db():
 
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
-def is_authorized(sender: str, server_host: str) -> bool:
+def is_authorized(sender: str, server_host: str, agent_id:str) -> bool:
+    if agent_id :
+        return False
     if sender == server_host:
         return True
     return False
@@ -268,10 +270,11 @@ async def start_agent(cell):
             handle = data.get("handle", None)
             sender = tx.get("sender", "")
             server_host = cell.host or cell.env.get("HOST", "")
+            agent_id = data.get("agent_id", None)
 
             print(tx)
 
-            if not is_authorized(sender, server_host):
+            if not is_authorized(sender, server_host, agent_id):
                 logging.warning(f"Access denied: '{sender}' is not authorized")
                 continue
 
