@@ -17,9 +17,6 @@ from jinja2 import Environment, FileSystemLoader
 logging.basicConfig(filename="agent.log", level=logging.WARNING, format='%(asctime)s - %(levelname)s - %(message)s')
 
 template_env = Environment(loader=FileSystemLoader(os.path.dirname(os.path.abspath(__file__))))
-
-with open("agent.config", "r") as f:
-    app_config = json.load(f)
     
 # ── Database ─────────────────────────────────────────────────────────────────
 
@@ -42,19 +39,9 @@ def _db():
 
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
-def is_authorized(sender: str, server_host: str, agent_id: str) -> bool:
-    my_agent_id = app_config.get("agent_meta", {}).get("agent_id", "")
-    if not agent_id or agent_id != my_agent_id:
-        return False
+def is_authorized(sender: str, server_host: str) -> bool:
     if sender == server_host:
         return True
-    audience = app_config.get("agent_meta", {}).get("audience", "private")
-    if audience == "public":
-        return True
-    if isinstance(audience, str) and audience != "private":
-        allowed = [cell.strip() for cell in audience.split(",") if cell.strip()]
-        if sender in allowed:
-            return True
     return False
 
 # ── Handlers ─────────────────────────────────────────────────────────────────
@@ -282,11 +269,10 @@ async def start_agent(cell):
             handle = data.get("handle", None)
             sender = tx.get("sender", "")
             server_host = cell.host or cell.env.get("HOST", "")
-            agent_id = data.get("agent_id", "")
 
             print(tx)
 
-            if not is_authorized(sender, server_host, agent_id):
+            if not is_authorized(sender, server_host):
                 logging.warning(f"Access denied: '{sender}' is not authorized")
                 continue
 

@@ -720,7 +720,7 @@
     doneGrid.innerHTML = '<div class="done-loading">Loading...</div>';
     try {
       const result = await window.parent.pywebview.api.activate_tx(
-        JSON.stringify({ handle: 'load_tasks', agent_id: "{{ agent_id }}" }),
+        JSON.stringify({ handle: 'load_tasks' }),
         "{{ host }}"
       );
       allTasks = result?.data?.json?.tasks ?? result?.json?.tasks ?? result?.tasks ?? [];
@@ -899,7 +899,6 @@
         await window.parent.pywebview.api.activate_tx(
           JSON.stringify({
             handle: 'save_task',
-            agent_id: "{{ agent_id }}",
             query,
             answer,
           }),
@@ -948,7 +947,7 @@
           setCardDone(card, newAnswer, query, agentName, combinedContext);
         } else {
           const result = await window.parent.pywebview.api.activate_tx(
-            JSON.stringify({ handle: 'get_answer', agent_id: "{{ agent_id }}", query, context: combinedContext }),
+            JSON.stringify({ handle: 'get_answer', query, context: combinedContext }),
             "{{ host }}"
           );
           const json = result?.data?.json ?? result?.json ?? result ?? {};
@@ -975,7 +974,6 @@
       const result = await window.parent.pywebview.api.activate_tx(
         JSON.stringify({
           handle: 'get_answer',
-          agent_id: "{{ agent_id }}",
           query,
           context: contextParts.join('\n\n'),
         }),
@@ -999,7 +997,7 @@
   async function runConfirmTask(suggestion) {
     try {
       const result = await window.parent.pywebview.api.activate_tx(
-        JSON.stringify({ handle: 'confirm_task', agent_id: "{{ agent_id }}", ...suggestion }),
+        JSON.stringify({ handle: 'confirm_task', ...suggestion }),
         "{{ host }}"
       );
       return result?.data?.json?.answer ?? result?.json?.answer ?? result?.answer ?? JSON.stringify(result);
@@ -1036,7 +1034,7 @@
       const filePath = dialogResult.paths[0];
       const filename = filePath.split('/').pop().split('\\').pop();
       const result = await window.parent.pywebview.api.activate_tx(
-        JSON.stringify({ handle: 'read_file', agent_id: "{{ agent_id }}", file_path: filePath }),
+        JSON.stringify({ handle: 'read_file', file_path: filePath }),
         "{{ host }}"
       );
       const context = result?.data?.json?.context ?? result?.json?.context ?? result?.context ?? '';
