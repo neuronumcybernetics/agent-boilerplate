@@ -35,10 +35,10 @@
 
     .results-panel {
       position: absolute;
-      top: 56px;
+      top: 80px;
       left: 50%;
       transform: translateX(-50%);
-      width: min(560px, calc(100% - 40px));
+      width: min(860px, calc(100% - 40px));
       bottom: 100px;
       overflow-y: auto;
       display: flex;
@@ -290,6 +290,12 @@
 
     .agent-info { display: flex; flex-direction: column; gap: 2px; overflow: hidden; }
 
+    .agent-name-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
     .agent-name {
       font-size: 13px;
       font-weight: 600;
@@ -297,6 +303,26 @@
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
+    }
+
+    .verified-badge {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(74, 222, 128, 0.85);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    .unverified-badge {
+      font-size: 10px;
+      font-weight: 500;
+      color: rgba(251, 191, 36, 0.75);
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
     }
 
     .agent-sub {
@@ -330,7 +356,8 @@
     .confirm-btn:hover:not(:disabled) { background: rgba(255, 255, 255, 0.12); }
     .confirm-btn:disabled, .dismiss-btn:disabled { opacity: 0.4; cursor: not-allowed; }
 
-    .dismiss-btn {
+
+.dismiss-btn {
       background: rgba(255, 255, 255, 0.04);
       color: rgba(255, 255, 255, 0.35);
       border-color: rgba(255, 255, 255, 0.08);
@@ -381,6 +408,125 @@
       color: rgba(255,255,255,0.45);
       margin: 0 0 8px;
     }
+
+    .file-name {
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: rgba(255,255,255,0.3);
+      margin-top: 10px;
+      margin-bottom: 4px;
+    }
+
+    .task-file-card {
+      margin-top: 10px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 10px 14px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      background: rgba(255,255,255,0.03);
+      font-size: 12px;
+      color: rgba(255,255,255,0.5);
+      cursor: pointer;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .task-file-card:hover {
+      border-color: rgba(255,255,255,0.16);
+      background: rgba(255,255,255,0.06);
+      color: rgba(255,255,255,0.75);
+    }
+
+    .task-file-card span { flex: 1; }
+
+    .file-modal {
+      display: none;
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      background: rgba(0,0,0,0.75);
+      backdrop-filter: blur(4px);
+      align-items: center;
+      justify-content: center;
+    }
+
+    .file-modal.open { display: flex; }
+
+    .file-modal-inner {
+      position: relative;
+      width: min(860px, calc(100% - 40px));
+      height: calc(100vh - 80px);
+      border-radius: 14px;
+      overflow: hidden;
+      border: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .file-modal-inner iframe {
+      width: 100%;
+      height: 100%;
+      border: none;
+    }
+
+    .file-modal-close {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(0,0,0,0.6);
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.7);
+      border-radius: 8px;
+      padding: 6px 12px;
+      font-size: 12px;
+      cursor: pointer;
+      z-index: 1;
+      transition: background 0.15s;
+    }
+
+    .file-modal-close:hover { background: rgba(0,0,0,0.85); }
+
+    .task-image-preview {
+      margin-top: 10px;
+      width: 100%;
+      height: 480px;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+      display: block;
+    }
+
+    .task-csv-preview {
+      margin-top: 10px;
+      overflow-x: auto;
+      border-radius: 10px;
+      border: 1px solid rgba(255,255,255,0.08);
+    }
+
+    .task-csv-preview table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+    }
+
+    .task-csv-preview th {
+      padding: 8px 12px;
+      text-align: left;
+      font-weight: 600;
+      color: rgba(255,255,255,0.5);
+      background: rgba(255,255,255,0.04);
+      border-bottom: 1px solid rgba(255,255,255,0.08);
+      white-space: nowrap;
+    }
+
+    .task-csv-preview td {
+      padding: 7px 12px;
+      color: rgba(255,255,255,0.7);
+      border-bottom: 1px solid rgba(255,255,255,0.04);
+      white-space: nowrap;
+    }
+
+    .task-csv-preview tr:last-child td { border-bottom: none; }
 
     .result-tag {
       display: inline-flex;
@@ -486,17 +632,52 @@
 
     /* ── Finished tasks view ─────────────────────────────────────────────────── */
 
-    #view-done {
+    #view-done, #view-open, #view-tasks {
       position: absolute;
       inset: 0;
-      overflow-y: auto;
-      padding: 60px 20px 20px;
       display: none;
+      flex-direction: column;
+      padding-top: 60px;
+    }
+
+    #view-done.visible, #view-open.visible, #view-tasks.visible { display: flex; }
+
+    #view-tasks .done-grid {
+      grid-template-columns: 1fr;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+      padding: 0 20px;
+    }
+
+    .open-card-pending {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.35);
+    }
+
+    .open-card-spinner {
+      width: 10px;
+      height: 10px;
+      border: 1.5px solid rgba(255,255,255,0.15);
+      border-top-color: rgba(255,255,255,0.5);
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+      flex-shrink: 0;
+    }
+
+    @keyframes spin { to { transform: rotate(360deg); } }
+
+    .done-scroll {
+      flex: 1;
+      overflow-y: auto;
+      padding: 0 20px 20px;
       scrollbar-width: none;
     }
 
-    #view-done.visible { display: block; }
-    #view-done::-webkit-scrollbar { display: none; }
+    .done-scroll::-webkit-scrollbar { display: none; }
 
     .done-grid {
       display: grid;
@@ -551,7 +732,7 @@
       text-align: center;
       color: rgba(255, 255, 255, 0.18);
       font-size: 13px;
-      margin-top: 60px;
+      margin-top: 40px;
     }
 
     .done-loading {
@@ -559,31 +740,127 @@
       color: rgba(255, 255, 255, 0.18);
       font-size: 12px;
       font-style: italic;
-      margin-top: 60px;
+      margin-top: 40px;
     }
 
-    .done-search-wrap {
-      max-width: 760px;
-      margin: 0 auto 12px;
+    .nav-search-divider {
+      width: 1px;
+      align-self: stretch;
+      background: rgba(255, 255, 255, 0.1);
+      margin: 4px 6px;
+      flex-shrink: 0;
     }
 
-    .done-search {
-      width: 100%;
-      background: rgba(255, 255, 255, 0.04);
-      border: 1px solid rgba(255, 255, 255, 0.09);
-      border-radius: 10px;
-      padding: 8px 14px;
+    .search-expand-wrap {
+      display: flex;
+      align-items: center;
+    }
+
+    .nav-search {
+      background: transparent;
+      border: none;
+      outline: none;
       font-size: 12px;
       font-family: 'Inter', sans-serif;
       color: rgba(255, 255, 255, 0.75);
-      outline: none;
-      transition: border-color 0.15s, background 0.15s;
+      width: 140px;
+      padding: 4px 0;
     }
 
-    .done-search::placeholder { color: rgba(255, 255, 255, 0.2); }
-    .done-search:focus {
-      border-color: rgba(255, 255, 255, 0.18);
-      background: rgba(255, 255, 255, 0.06);
+    .nav-search::placeholder { color: rgba(255, 255, 255, 0.2); }
+
+    /* ── Search results panel ────────────────────────────────────────────────── */
+
+    .search-results-panel {
+      position: fixed;
+      top: 54px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(520px, calc(100% - 40px));
+      background: rgba(12, 12, 12, 0.96);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 12px;
+      backdrop-filter: blur(16px);
+      z-index: 200;
+      overflow: hidden;
+      display: none;
+    }
+
+    .search-results-panel.open { display: block; }
+
+    .search-result-item {
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+      padding: 10px 16px;
+      cursor: pointer;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      transition: background 0.12s;
+    }
+
+    .search-result-item:last-child { border-bottom: none; }
+    .search-result-item:hover { background: rgba(255, 255, 255, 0.05); }
+
+    .search-result-item.active { background: rgba(255, 255, 255, 0.07); }
+
+    .search-result-query {
+      font-size: 12px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.8);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-snippet {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.3);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .search-result-tag {
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: rgba(255, 255, 255, 0.2);
+      margin-top: 1px;
+    }
+
+    .search-empty {
+      padding: 20px 16px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.25);
+      text-align: center;
+    }
+
+    .search-filters {
+      display: flex;
+      gap: 5px;
+      padding: 10px 12px 8px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    }
+
+    .search-filter-badge {
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 500;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      background: none;
+      color: rgba(255, 255, 255, 0.3);
+      transition: all 0.15s;
+    }
+
+    .search-filter-badge:hover { color: rgba(255, 255, 255, 0.6); border-color: rgba(255, 255, 255, 0.2); }
+
+    .search-filter-badge.active {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+      color: rgba(255, 255, 255, 0.85);
     }
 
     .done-card {
@@ -635,6 +912,17 @@
     }
     .done-card-full-answer pre code { background: none; padding: 0; }
     .done-card-full-answer strong { color: rgba(255,255,255,0.85); }
+    .done-card-followup-query {
+      font-size: 12px;
+      color: rgba(255,255,255,0.4);
+      margin: 12px 0 6px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+    }
+    .done-card-full-answer-block p { margin: 0 0 8px; }
+    .done-card-full-answer-block p:last-child { margin-bottom: 0; }
+    .done-card-full-answer-block ul, .done-card-full-answer-block ol { padding-left: 18px; margin: 0 0 8px; }
+    .done-card-full-answer-block li { margin-bottom: 3px; }
 
     .done-card-collapse {
       background: none;
@@ -653,24 +941,41 @@
 </head>
 <body>
 
-  <!-- Slider nav -->
-  <nav class="slider-nav">
-    <button class="slider-tab active" id="tab-new">New Task</button>
-    <button class="slider-tab" id="tab-done">Finished</button>
-  </nav>
+  <!-- Slider nav + upload -->
+  <div style="position:fixed;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px;z-index:100;">
+    <nav class="slider-nav" style="position:static;transform:none;">
+      <button class="slider-tab active" id="tab-new"><i class="fa-regular fa-pen-to-square"></i></button>
+      <button class="slider-tab" id="tab-tasks">Tasks</button>
+      <button class="slider-tab" id="tab-done">Finished</button>
+      <div class="nav-search-divider"></div>
+      <div class="search-expand-wrap" id="search-expand-wrap">
+        <i class="fa-solid fa-magnifying-glass" style="font-size:11px;color:rgba(255,255,255,0.25);margin-right:8px;margin-left:4px;"></i>
+        <input class="nav-search" id="nav-search" type="text" placeholder="Search..." />
+      </div>
+    </nav>
+  </div>
+
+  <!-- Global search results panel -->
+  <div class="search-results-panel" id="search-results-panel"></div>
+
+  <!-- Inbound open tasks view -->
+  <div id="view-tasks">
+    <div class="done-scroll">
+      <div class="done-grid" id="tasks-grid"></div>
+    </div>
+  </div>
 
   <!-- Finished tasks view -->
   <div id="view-done">
-    <div class="done-search-wrap">
-      <input class="done-search" id="done-search" type="text" placeholder="Search tasks..." />
+    <div class="done-scroll">
+      <div class="done-grid" id="done-grid"></div>
     </div>
-    <div class="done-grid" id="done-grid"></div>
   </div>
 
   <!-- Task view -->
   <div class="main-area visible" id="view-new">
     <div class="command-center" id="command-center">
-      <div class="agent-greeting" id="agent-greeting">Hey, what task needs to be done?</div>
+      <div class="agent-greeting" id="agent-greeting">Hey {{ operator }}, what task needs to be done?</div>
       <div class="command-wrap" id="command-wrap">
         <div id="attach-badge" style="display:none;">
           <i class="fa-solid fa-file" style="font-size:11px;opacity:0.5;"></i>
@@ -688,31 +993,255 @@
   </div>
 
 
+<!-- File modal -->
+<div class="file-modal" id="file-modal">
+  <div class="file-modal-inner">
+    <button class="file-modal-close" onclick="closeFileModal()"><i class="fa-solid fa-xmark"></i> Close</button>
+    <div id="file-modal-body" style="width:100%;height:100%;overflow:auto;"></div>
+  </div>
+</div>
+
 <script>
   marked.setOptions({ breaks: true });
+
+  function openFileModal(src) {
+    const body = document.getElementById('file-modal-body');
+    body.innerHTML = '';
+    const iframe = document.createElement('iframe');
+    iframe.style.cssText = 'width:100%;height:100%;border:none;';
+    iframe.src = src;
+    body.appendChild(iframe);
+    document.getElementById('file-modal').classList.add('open');
+  }
+
+  function closeFileModal() {
+    document.getElementById('file-modal').classList.remove('open');
+    document.getElementById('file-modal-body').innerHTML = '';
+  }
+
+document.getElementById('file-modal').addEventListener('click', (e) => {
+    if (e.target === e.currentTarget) closeFileModal();
+  });
 
   // ── Slider ─────────────────────────────────────────────────────────────────
 
   const tabNew = document.getElementById('tab-new');
+  const tabTasks = document.getElementById('tab-tasks');
   const tabDone = document.getElementById('tab-done');
+  const navSearchEl = document.getElementById('nav-search');
   const viewNew = document.getElementById('view-new');
+  const viewTasks = document.getElementById('view-tasks');
   const viewDone = document.getElementById('view-done');
   const doneGrid = document.getElementById('done-grid');
+  const tasksGrid = document.getElementById('tasks-grid');
+
+  let activeTabKey = 'new';
+
+  function setActiveTab(active) {
+    [tabNew, tabTasks, tabDone].forEach(t => t.classList.remove('active'));
+    [viewNew, viewTasks, viewDone].forEach(v => v.classList.remove('visible'));
+    active.tab.classList.add('active');
+    active.view.classList.add('visible');
+    closeSearch();
+  }
 
   tabNew.addEventListener('click', () => {
-    tabNew.classList.add('active');
-    tabDone.classList.remove('active');
-    viewNew.classList.add('visible');
-    viewDone.classList.remove('visible');
+    activeTabKey = 'new';
+    setActiveTab({ tab: tabNew, view: viewNew });
+  });
+
+  tabTasks.addEventListener('click', async () => {
+    activeTabKey = 'tasks';
+    setActiveTab({ tab: tabTasks, view: viewTasks });
+    await loadOpenTasks();
   });
 
   tabDone.addEventListener('click', async () => {
-    tabDone.classList.add('active');
-    tabNew.classList.remove('active');
-    viewDone.classList.add('visible');
-    viewNew.classList.remove('visible');
+    activeTabKey = 'done';
+    setActiveTab({ tab: tabDone, view: viewDone });
     await loadFinishedTasks();
   });
+
+  // ── Global search index ────────────────────────────────────────────────────
+
+  const searchPanel = document.getElementById('search-results-panel');
+  let searchIndex = [];
+  let searchFilter = 'all';
+
+  async function buildSearchIndex() {
+    try {
+      const [finished, open] = await Promise.all([
+        window.parent.pywebview.api.activate_tx(JSON.stringify({ handle: 'load_tasks' }), "{{ host }}"),
+        window.parent.pywebview.api.activate_tx(JSON.stringify({ handle: 'load_open_tasks' }), "{{ host }}"),
+      ]);
+      const finishedTasks = (finished?.data?.json?.tasks ?? finished?.json?.tasks ?? []).map(t => ({ ...t, _type: 'finished' }));
+      const openTasks = (open?.data?.json?.tasks ?? open?.json?.tasks ?? []).map(t => ({ ...t, _type: 'tasks' }));
+      searchIndex = [...finishedTasks, ...openTasks];
+    } catch (_) {}
+  }
+
+  function closeSearch() {
+    navSearchEl.value = '';
+    searchPanel.classList.remove('open');
+    searchPanel.innerHTML = '';
+    searchFilter = 'all';
+  }
+
+  function renderSearchResults(q) {
+    if (!q) { searchPanel.classList.remove('open'); searchPanel.innerHTML = ''; return; }
+
+    const filtered = searchIndex.filter(t => {
+      if (searchFilter !== 'all' && t._type !== searchFilter) return false;
+      return (t.query || '').toLowerCase().includes(q) || (t.answer || '').toLowerCase().includes(q);
+    }).slice(0, 4);
+
+    searchPanel.innerHTML = '';
+
+    // Filter badges
+    const filtersEl = document.createElement('div');
+    filtersEl.className = 'search-filters';
+    for (const [key, label] of [['all', 'All'], ['finished', 'Finished'], ['tasks', 'Tasks']]) {
+      const badge = document.createElement('button');
+      badge.className = 'search-filter-badge' + (searchFilter === key ? ' active' : '');
+      badge.textContent = label;
+      badge.addEventListener('click', (e) => {
+        e.stopPropagation();
+        searchFilter = key;
+        renderSearchResults(navSearchEl.value.trim().toLowerCase());
+      });
+      filtersEl.appendChild(badge);
+    }
+    searchPanel.appendChild(filtersEl);
+
+    if (!filtered.length) {
+      const empty = document.createElement('div');
+      empty.className = 'search-empty';
+      empty.textContent = 'No results found.';
+      searchPanel.appendChild(empty);
+    } else {
+      const tagLabel = { finished: 'Finished', tasks: 'Tasks' };
+      for (const t of filtered) {
+        const item = document.createElement('div');
+        item.className = 'search-result-item';
+        item.innerHTML = `
+          <div class="search-result-tag">${tagLabel[t._type] || t._type}</div>
+          <div class="search-result-query">${t.query}</div>
+          ${t.answer ? `<div class="search-result-snippet">${t.answer.replace(/\n/g, ' ').slice(0, 100)}</div>` : ''}
+        `;
+        item.addEventListener('click', () => {
+          closeSearch();
+          if (t._type === 'finished') {
+            setActiveTab({ tab: tabDone, view: viewDone });
+            loadFinishedTasks();
+          } else if (t._type === 'tasks') {
+            setActiveTab({ tab: tabTasks, view: viewTasks });
+            loadOpenTasks();
+          }
+        });
+        searchPanel.appendChild(item);
+      }
+    }
+    searchPanel.classList.add('open');
+  }
+
+  navSearchEl.addEventListener('input', (e) => {
+    renderSearchResults(e.target.value.trim().toLowerCase());
+  });
+
+  document.addEventListener('click', (e) => {
+    if (!searchPanel.contains(e.target) && e.target !== navSearchEl) closeSearch();
+  });
+
+  navSearchEl.addEventListener('keydown', (e) => {
+    if (e.key === 'Escape') closeSearch();
+  });
+
+  // ── Open tasks (inbound, received from other agents) ────────────────────────
+
+  async function loadOpenTasks() {
+    tasksGrid.innerHTML = '<div class="done-loading">Loading...</div>';
+    try {
+      const result = await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'load_open_tasks' }),
+        "{{ host }}"
+      );
+      const tasks = result?.data?.json?.tasks ?? result?.json?.tasks ?? result?.tasks ?? [];
+      renderOpenTasks(tasks);
+    } catch (e) {
+      tasksGrid.innerHTML = '<div class="done-empty">Could not load tasks.</div>';
+    }
+  }
+
+  function renderOpenTasks(tasks) {
+    if (!tasks.length) {
+      tasksGrid.innerHTML = '<div class="done-empty">No open tasks.</div>';
+      return;
+    }
+    tasksGrid.innerHTML = '';
+    for (const t of tasks) {
+      const date = new Date(t.created_at);
+      const dateStr = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+      const card = document.createElement('div');
+      card.className = 'done-card';
+      card.innerHTML = `
+        <div class="done-card-query">${t.query}</div>
+        <div class="done-card-meta">
+          <span>${dateStr} · from ${t.agent_name || 'agent'}</span>
+          <button class="open-finish-btn confirm-btn">Open Task</button>
+        </div>
+      `;
+
+      card.querySelector('.open-finish-btn').addEventListener('click', () => {
+        card.remove();
+        setActiveTab({ tab: tabNew, view: viewNew });
+
+        const messages = (() => { try { return JSON.parse(t.conversation || '[]'); } catch { return []; } })();
+        const suggestions = (() => { try { return JSON.parse(t.suggestions || '[]'); } catch { return []; } })();
+
+        if (messages.length >= 2) {
+          const firstUser = messages[0];
+          const taskCard = createCard(firstUser.text, [firstUser]);
+          taskCard._taskId = t.id;
+
+          for (let i = 1; i < messages.length; i += 2) {
+            const agentMsg = messages[i];
+            const nextUserMsg = messages[i + 1];
+            const isLast = !nextUserMsg;
+
+            if (isLast) {
+              // Final turn — setCardDone pushes agentMsg to _exchange internally
+              setCardDone(taskCard, agentMsg.text, messages[i - 1]?.text || t.query, t.agent_name || 'Agent', '', suggestions.length ? suggestions : null);
+            } else {
+              // Intermediate turn — render visually but don't wire up actions
+              taskCard._exchange.push(agentMsg);
+              const resultEl = document.createElement('div');
+              resultEl.innerHTML = `
+                <div class="result-tag">&#x2713; Done</div>
+                <div class="task-result">${marked.parse(agentMsg.text)}</div>
+              `;
+              taskCard.querySelector('.task-status')?.replaceWith(resultEl);
+
+              // Render the next user follow-up question
+              const followupEl = document.createElement('div');
+              followupEl.innerHTML = `
+                <div class="task-query" style="margin-top:12px">${nextUserMsg.text}</div>
+                <div class="task-divider"></div>
+                <div class="task-status"><div class="spinner"></div><span>Thinking...</span></div>
+              `;
+              taskCard.append(...Array.from(followupEl.children));
+              taskCard._exchange.push(nextUserMsg);
+            }
+          }
+        } else {
+          const taskCard = createCard(t.query, [{ role: 'user', text: t.query }]);
+          taskCard._taskId = t.id;
+          setCardDone(taskCard, t.answer || '', t.query, t.agent_name || 'Agent', '', suggestions.length ? suggestions : null);
+        }
+      });
+
+      tasksGrid.appendChild(card);
+    }
+  }
 
   let allTasks = [];
 
@@ -730,12 +1259,6 @@
     }
   }
 
-  document.getElementById('done-search').addEventListener('input', (e) => {
-    const q = e.target.value.trim().toLowerCase();
-    const filtered = q ? allTasks.filter(t => t.query.toLowerCase().includes(q) || t.answer.toLowerCase().includes(q)) : allTasks;
-    renderFinishedTasks(filtered);
-  });
-
   function renderFinishedTasks(tasks) {
     if (!tasks.length) {
       doneGrid.innerHTML = '<div class="done-empty">No tasks found.</div>';
@@ -746,11 +1269,23 @@
       const date = new Date(t.created_at);
       const dateStr = date.toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
       const card = document.createElement('div');
+      const messages = (() => { try { return JSON.parse(t.conversation || '[]'); } catch { return []; } })();
+      const fullAnswerHtml = messages.length >= 2
+        ? messages.map((m, idx) => {
+            if (m.role === 'user' && idx > 0) {
+              return `<div class="done-card-followup-query">${m.text}</div>`;
+            } else if (m.role === 'agent') {
+              return `<div class="done-card-full-answer-block">${marked.parse(m.text)}</div>`;
+            }
+            return '';
+          }).join('')
+        : marked.parse(t.answer);
+
       card.className = 'done-card';
       card.innerHTML = `
         <div class="done-card-query">${t.query}</div>
         <div class="done-card-answer">${t.answer}</div>
-        <div class="done-card-full-answer">${marked.parse(t.answer)}</div>
+        <div class="done-card-full-answer">${fullAnswerHtml}</div>
         <div class="done-card-meta">
           <span>${dateStr}</span>
           <button class="done-card-collapse" style="display:none;">Collapse ↑</button>
@@ -824,14 +1359,31 @@
     else card.appendChild(status);
   }
 
-  function setCardDone(card, answer, query, agentName, context = '', suggestions = null) {
+  function renderFile({ name, data, mime }) {
+    const title = name ? `<div class="file-name">${name}</div>` : '';
+    if (mime === 'text/csv') {
+      const rows = data.trim().split('\n').map(r => r.split(','));
+      const header = rows[0].map(h => `<th>${h}</th>`).join('');
+      const body = rows.slice(1).map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
+      return `${title}<div class="task-csv-preview"><table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table></div>`;
+    }
+    if (mime.startsWith('image/')) return `${title}<img class="task-image-preview" src="data:${mime};base64,${data}" alt="" />`;
+    const label = mime.split('/')[1].toUpperCase();
+    return `${title}<div class="task-file-card" onclick="openFileModal('data:${mime};base64,${data}')"><i class="fa-regular fa-file"></i><span>${name || label} — click to open</span><i class="fa-solid fa-arrow-up-right-from-square"></i></div>`;
+  }
+
+  function setCardDone(card, answer, query, agentName, context = '', suggestions = null, files = null) {
     card.classList.remove('active');
     card._exchange.push({ role: 'agent', text: answer });
+
+
+    const filesHtml = files?.length ? files.map(renderFile).join('') : '';
 
     const resultEl = document.createElement('div');
     resultEl.innerHTML = `
       <div class="result-tag">&#x2713; Done</div>
       <div class="task-result">${marked.parse(answer)}</div>
+      ${filesHtml}
     `;
     card.querySelector('.task-status')?.replaceWith(resultEl);
 
@@ -841,19 +1393,26 @@
       suggestionsEl.innerHTML = `<div style="font-size:11px;color:rgba(255,255,255,0.25);margin-bottom:4px;">Or delegate to an agent</div>`;
       for (const suggestion of suggestions) {
         const logoContent = suggestion.logo ? `<img src="${suggestion.logo}" alt="" />` : '&#x1F916;';
+        const isVerified = suggestion.verified == 1;
+        const verifiedBadge = isVerified
+          ? `<span class="verified-badge"><i class="fa-solid fa-circle-check"></i> Verified</span>`
+          : `<span class="unverified-badge"><i class="fa-solid fa-triangle-exclamation"></i> Not verified</span>`;
         const row = document.createElement('div');
         row.className = 'suggestion-row';
         row.innerHTML = `
           <div class="suggestion-agent">
             <div class="agent-logo">${logoContent}</div>
             <div class="agent-info">
-              <div class="agent-name">${suggestion.agent_name}</div>
+              <div class="agent-name-row">
+                <span class="agent-name">${suggestion.agent_name}</span>
+                ${verifiedBadge}
+              </div>
               <div class="agent-sub">${[suggestion.author, suggestion.creator].filter(Boolean).join(' · ')}</div>
               <div class="agent-sub">${suggestion.description || suggestion.handle}</div>
             </div>
           </div>
           <div class="suggestion-actions">
-            <button class="confirm-btn">Run</button>
+            <button class="confirm-btn">Consult Agent</button>
           </div>
         `;
         row.querySelector('.confirm-btn').addEventListener('click', async () => {
@@ -861,8 +1420,16 @@
           suggestionsEl.remove();
           setCardWorking(card);
           card.classList.add('active');
-          const newAnswer = await runConfirmTask(suggestion);
-          setCardDone(card, newAnswer, query, suggestion.agent_name, context);
+          const userMsg = { role: 'user', text: `[Consulted ${suggestion.agent_name}] ${query}` };
+          const { answer: newAnswer, files: newFiles } = await runSuperviseTask(suggestion, query, context);
+          if (card._taskId) {
+            window.parent.pywebview.api.activate_tx(
+              JSON.stringify({ handle: 'append_messages', task_id: card._taskId, messages: [userMsg, { role: 'agent', text: newAnswer }] }),
+              "{{ host }}"
+            ).catch(() => {});
+          }
+          card._exchange.push(userMsg);
+          setCardDone(card, newAnswer, query, suggestion.agent_name, context, null, newFiles);
         });
         suggestionsEl.appendChild(row);
       }
@@ -870,18 +1437,34 @@
     }
 
     activeCard = { card, answer, context, agentName };
-    inputEl.placeholder = 'Follow up or mark as done...';
+    inputEl.placeholder = 'Follow up or mark as finished...';
+
+    card.querySelector('.result-actions')?.remove();
 
     const actionsEl = document.createElement('div');
     actionsEl.className = 'result-actions';
     actionsEl.innerHTML = `
       <button class="copy-btn" title="Copy answer"><i class="fa-regular fa-copy"></i> Copy</button>
-      <button class="close-btn">Mark as done</button>
+      <button class="close-btn">Finish Task</button>
     `;
 
     actionsEl.querySelector('.copy-btn').addEventListener('click', async (e) => {
       const btn = e.currentTarget;
-      await navigator.clipboard.writeText(answer);
+      const parts = [answer];
+      if (files?.length) {
+        for (const f of files) {
+          if (f.mime === 'text/csv') {
+            const rows = f.data.trim().split('\n').map(r => r.split(',').map(c => c.trim()));
+            const header = `| ${rows[0].join(' | ')} |`;
+            const divider = `| ${rows[0].map(() => '---').join(' | ')} |`;
+            const body = rows.slice(1).map(r => `| ${r.join(' | ')} |`).join('\n');
+            parts.push(`\n**${f.name || 'Table'}**\n\n${header}\n${divider}\n${body}`);
+          } else if (f.mime.startsWith('text/')) {
+            parts.push(`\n**${f.name || f.mime}**\n${f.data}`);
+          }
+        }
+      }
+      await navigator.clipboard.writeText(parts.join('\n'));
       btn.classList.add('copied');
       btn.innerHTML = '<i class="fa-solid fa-check"></i> Copied';
       setTimeout(() => {
@@ -896,15 +1479,14 @@
       card.remove();
       updateGreeting();
       try {
-        await window.parent.pywebview.api.activate_tx(
-          JSON.stringify({
-            handle: 'save_task',
-            query,
-            answer,
-          }),
-          "{{ host }}"
-        );
+        if (card._taskId) {
+          await window.parent.pywebview.api.activate_tx(
+            JSON.stringify({ handle: 'finish_task', task_id: card._taskId, answer }),
+            "{{ host }}"
+          );
+        }
       } catch (_) {}
+      buildSearchIndex();
     });
 
     card.appendChild(actionsEl);
@@ -943,15 +1525,21 @@
       try {
         const savedSuggestion = card._suggestion;
         if (savedSuggestion) {
-          const newAnswer = await runConfirmTask({ ...savedSuggestion, query, context: combinedContext });
-          setCardDone(card, newAnswer, query, agentName, combinedContext);
+          const { answer: newAnswer, files: newFiles } = await runSuperviseTask(savedSuggestion, query, combinedContext);
+          if (card._taskId) {
+            window.parent.pywebview.api.activate_tx(
+              JSON.stringify({ handle: 'append_messages', task_id: card._taskId, messages: [{ role: 'user', text: query }, { role: 'agent', text: newAnswer }] }),
+              "{{ host }}"
+            ).catch(() => {});
+          }
+          setCardDone(card, newAnswer, query, agentName, combinedContext, null, newFiles);
         } else {
           const result = await window.parent.pywebview.api.activate_tx(
-            JSON.stringify({ handle: 'get_answer', query, context: combinedContext }),
+            JSON.stringify({ handle: 'get_followup', query, context: combinedContext, task_id: card._taskId }),
             "{{ host }}"
           );
           const json = result?.data?.json ?? result?.json ?? result ?? {};
-          setCardDone(card, json?.answer ?? JSON.stringify(json), query, agentName, combinedContext, json?.suggestions?.length ? json.suggestions : null);
+          setCardDone(card, json?.answer ?? JSON.stringify(json), query, agentName, combinedContext);
         }
       } catch (e) {
         setCardError(card, `Error: ${e.message || e}`);
@@ -983,6 +1571,7 @@
       const json = result?.data?.json ?? result?.json ?? result ?? {};
       const answer = json?.answer ?? JSON.stringify(json);
       const suggestions = json?.suggestions?.length ? json.suggestions : null;
+      if (json?.task_id) card._taskId = json.task_id;
       setCardDone(card, answer, query, 'Team Agent', '', suggestions);
     } catch (e) {
       setCardError(card, `Error: ${e.message || e}`);
@@ -994,15 +1583,16 @@
 
   // ── Confirm task ───────────────────────────────────────────────────────────
 
-  async function runConfirmTask(suggestion) {
+  async function runSuperviseTask(suggestion, query, context = '') {
     try {
       const result = await window.parent.pywebview.api.activate_tx(
-        JSON.stringify({ handle: 'confirm_task', ...suggestion }),
-        "{{ host }}"
+        JSON.stringify({ handle: suggestion.handle, agent_id: suggestion.agent_id, query, context }),
+        suggestion.creator
       );
-      return result?.data?.json?.answer ?? result?.json?.answer ?? result?.answer ?? JSON.stringify(result);
+      const json = result?.data?.json ?? result?.json ?? result ?? {};
+      return { answer: json?.answer ?? JSON.stringify(result), files: json?.files ?? null };
     } catch (e) {
-      return `Error: ${e.message || e}`;
+      return { answer: `Error: ${e.message || e}`, files: null };
     }
   }
 
@@ -1029,18 +1619,16 @@
   uploadBtn.addEventListener('click', async () => {
     uploadBtn.disabled = true;
     try {
-      const dialogResult = await window.parent.pywebview.api.open_file_dialog();
+      const dialogResult = await window.parent.pywebview.api.open_file_dialog(false, true);
       if (!dialogResult?.paths?.length) return;
-      const filePath = dialogResult.paths[0];
-      const filename = filePath.split('/').pop().split('\\').pop();
       const result = await window.parent.pywebview.api.activate_tx(
-        JSON.stringify({ handle: 'read_file', file_path: filePath }),
+        JSON.stringify({ handle: 'read_file', filename: dialogResult.filename, content: dialogResult.content }),
         "{{ host }}"
       );
       const context = result?.data?.json?.context ?? result?.json?.context ?? result?.context ?? '';
       if (context) {
-        pendingAttachment = { filename, context };
-        setAttachmentBadge(filename);
+        pendingAttachment = { filename: dialogResult.filename, context };
+        setAttachmentBadge(dialogResult.filename);
         inputEl.focus();
       }
     } finally {
@@ -1048,7 +1636,12 @@
     }
   });
 
+
   // ── Init ───────────────────────────────────────────────────────────────────
+
+  setActiveTab({ tab: tabNew, view: viewNew });
+  buildSearchIndex();
+
 
   sendBtn.disabled = true;
 
