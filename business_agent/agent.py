@@ -79,7 +79,7 @@ def is_authorized(sender: str, server_host: str, agent_id: str) -> bool:
         return True
     return False
 
-def audience_allows(audience: str, sender: str) -> bool:
+def audience_allows(audience: str, sender: str, server_host: str = "") -> bool:
     """Returns True if sender is permitted by the agent's audience field."""
     if not audience:
         return False
@@ -87,7 +87,7 @@ def audience_allows(audience: str, sender: str) -> bool:
     if audience.lower() == "public":
         return True
     if audience.lower() == "private":
-        return False
+        return sender == server_host
     allowed = {s.strip() for s in audience.split(",")}
     if sender in allowed:
         return True
@@ -107,6 +107,7 @@ SYSTEM_PROMPT = (
 
 async def route_to_agent(cell, query: str, sender: str):
     agents = await cell.list_agents() or []
+    server_host = cell.host or cell.env.get("HOST", "")
 
     candidates = []
     for a in agents:
@@ -116,7 +117,7 @@ async def route_to_agent(cell, query: str, sender: str):
             continue
         meta = config.get("agent_meta", {})
         audience = meta.get("audience", "")
-        if not audience_allows(audience, sender):
+        if not audience_allows(audience, sender, server_host):
             continue
         agent_id = meta.get("agent_id", a.get("agent_id", ""))
         creator = a.get("creator", "")
@@ -134,7 +135,7 @@ async def route_to_agent(cell, query: str, sender: str):
                 "examples": skill.get("examples", []),
                 "verified": verified,
             })
-
+    print(candidates)
     if not candidates:
         return None
 
@@ -201,7 +202,7 @@ async def handle_get_answer(cell, tx: dict):
     answer = result["choices"][0]["message"]["content"]
 
     route = await route_to_agent(cell, query, cell_id)
-    suggestions = [{**s, "query": query, "context": context} for s in route] if route else []
+    suggestions = [{**s, "query": query, "context": answer} for s in route] if route else []
 
     conversation = [{"role": "user", "text": query}, {"role": "agent", "text": answer}]
     created_at = datetime.now(timezone.utc).isoformat()
