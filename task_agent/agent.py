@@ -49,18 +49,25 @@ async def run_agent(query: str, context: str, handle: str = "") -> str:
 
     async with mcp_client:
         tool_list = await mcp_client.list_tools()
-        tools_text = "\n".join(
-            f'- {t.name}: {t.description} | args: {json.dumps(t.inputSchema.get("properties", {}))}'
-            for t in tool_list
-        )
+        def fmt_tool(t):
+            props = t.inputSchema.get("properties", {})
+            required = set(t.inputSchema.get("required", []))
+            args = ", ".join(
+                f'{k}{"" if k in required else "?"}: {v.get("description", v.get("type", ""))}'
+                for k, v in props.items()
+            )
+            return f'- {t.name}({args}): {t.description}'
+        tools_text = "\n".join(fmt_tool(t) for t in tool_list)
 
         system = (
-            f"You are {AGENT_NAME}, a helpful assistant with access to tools.\n"
+            f"You are {AGENT_NAME}, a CRM assistant. You manage contacts, log interactions, and track deals.\n"
+            "Always use tools to read or write CRM data — never invent contact details or interaction history.\n"
             "To call a tool, output ONLY a raw JSON object on a single line — no explanation before or after it: "
             '{"tool": "tool_name", "args": {"arg": value}}\n'
             "When you have enough information to answer, reply in plain natural language with no JSON.\n"
             "NEVER mix text and a JSON tool call in the same reply.\n"
-            + (f"\nThe requested skill is '{handle}' — prefer the matching tool if applicable." if handle else "")
+            "Be concise — confirm actions taken and surface the most relevant CRM data.\n"
+            + (f"\nThe requested skill is '{handle}' — use the matching tool directly." if handle else "")
             + (f"\nContext:\n{context}" if context else "")
             + f"\n\nAvailable tools:\n{tools_text}"
         )

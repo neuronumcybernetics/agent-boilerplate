@@ -46,6 +46,43 @@ def _init_db():
             conn.execute(f"ALTER TABLE tasks ADD COLUMN {col} TEXT NOT NULL DEFAULT {default}")
         except Exception:
             pass
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS task_templates (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            name TEXT NOT NULL,
+            description TEXT NOT NULL DEFAULT '',
+            agents TEXT NOT NULL DEFAULT '[]',
+            employees TEXT NOT NULL DEFAULT '[]',
+            knowledge TEXT NOT NULL DEFAULT '',
+            created_at TEXT NOT NULL
+        )
+    """)
+    try:
+        conn.execute("ALTER TABLE task_templates ADD COLUMN knowledge TEXT NOT NULL DEFAULT ''")
+    except Exception:
+        pass
+    try:
+        conn.execute("ALTER TABLE task_templates ADD COLUMN mode TEXT NOT NULL DEFAULT 'parallel'")
+    except Exception:
+        pass
+    try:
+        conn.execute("ALTER TABLE task_templates ADD COLUMN parameters TEXT NOT NULL DEFAULT '[]'")
+    except Exception:
+        pass
+    try:
+        conn.execute("ALTER TABLE task_templates ADD COLUMN last_used_at TEXT NOT NULL DEFAULT ''")
+    except Exception:
+        pass
+    conn.execute("""
+        CREATE TABLE IF NOT EXISTS knowledge (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            title TEXT NOT NULL,
+            content TEXT NOT NULL DEFAULT '',
+            tags TEXT NOT NULL DEFAULT '',
+            cells TEXT NOT NULL DEFAULT '[]',
+            created_at TEXT NOT NULL
+        )
+    """)
     conn.commit()
     conn.close()
 
@@ -70,29 +107,16 @@ async def _append_conversation(task_id: int, new_messages: list, answer: str = N
 
 # ── Auth ─────────────────────────────────────────────────────────────────────
 
-def is_authorized(sender: str, server_host: str, agent_id: str) -> bool:
+def is_authorized(sender: str, server_host: str, agent_id: str) -> tuple[bool, str]:
+    """Returns (authorized, access_level) where access_level is 'admin', 'employee', or ''."""
     if agent_id:
-        return False
+        return False, ""
     if sender == server_host:
-        return True
+        return True, "admin"
     if "@" in sender and sender.split("@", 1)[1] == server_host:
-        return True
-    return False
+        return True, "employee"
+    return False, ""
 
-def audience_allows(audience: str, sender: str, server_host: str = "") -> bool:
-    """Returns True if sender is permitted by the agent's audience field."""
-    if not audience:
-        return False
-    audience = audience.strip()
-    if audience.lower() == "public":
-        return True
-    if audience.lower() == "private":
-        return sender == server_host
-    allowed = {s.strip() for s in audience.split(",")}
-    if sender in allowed:
-        return True
-    sender_domain = sender.split("@", 1)[1] if "@" in sender else sender
-    return sender_domain in allowed
 
 # ── Constants ────────────────────────────────────────────────────────────────
 
@@ -105,85 +129,18 @@ SYSTEM_PROMPT = (
 
 # ── Handlers ─────────────────────────────────────────────────────────────────
 
-async def route_to_agent(cell, query: str, sender: str):
-    agents = await cell.list_agents() or []
-    server_host = cell.host or cell.env.get("HOST", "")
 
-    candidates = []
-    for a in agents:
-        try:
-            config = json.loads(a.get("config", "{}"))
-        except Exception:
-            continue
-        meta = config.get("agent_meta", {})
-        audience = meta.get("audience", "")
-        if not audience_allows(audience, sender, server_host):
-            continue
-        agent_id = meta.get("agent_id", a.get("agent_id", ""))
-        creator = a.get("creator", "")
-        author = a.get("author", "")
-        verified = a.get("verified", "")
-        for skill in config.get("skills", []):
-            candidates.append({
-                "agent_id": agent_id,
-                "creator": creator,
-                "author": author,
-                "name": meta.get("name", ""),
-                "logo": meta.get("logo", ""),
-                "handle": skill.get("handle", ""),
-                "description": skill.get("description", ""),
-                "examples": skill.get("examples", []),
-                "verified": verified,
-            })
-    print(candidates)
-    if not candidates:
-        return None
-
-    skills_text = "\n".join(
-        f'- agent_id="{c["agent_id"]}" handle="{c["handle"]}" description="{c["description"]}" examples={c["examples"]}'
-        for c in candidates
-    )
-
-    system = (
-        "You are a routing assistant. Given a user query and a list of available agent skills, "
-        "choose up to 3 agents that are a strong, specific match for the query. "
-        "If no agent is a strong match, return an empty array. "
-        'Reply with ONLY a JSON array: [{"agent_id": "...", "handle": "..."}, ...]'
-    )
-
-    llm = get_model()
-    result = await asyncio.to_thread(
-        llm.create_chat_completion,
-        messages=[
-            {"role": "system", "content": system},
-            {"role": "user", "content": f"User query: {query}\n\nAvailable skills:\n{skills_text}"},
-        ]
-    )
-    raw = result["choices"][0]["message"]["content"].strip()
-
-    try:
-        start, end = raw.index("["), raw.rindex("]") + 1
-        choices = json.loads(raw[start:end])
-        suggestions = []
-        for choice in choices[:3]:
-            agent_id = choice["agent_id"]
-            handle = choice["handle"]
-            matched = next((c for c in candidates if c["agent_id"] == agent_id and c["handle"] == handle), None)
-            if matched:
-                suggestions.append({
-                    "agent_id": agent_id,
-                    "creator": matched["creator"],
-                    "author": matched.get("author", ""),
-                    "handle": handle,
-                    "agent_name": matched["name"],
-                    "logo": matched.get("logo", ""),
-                    "description": matched.get("description", ""),
-                    "verified": matched.get("verified", 0),
-                })
-        return suggestions if suggestions else None
-    except Exception:
-        pass
-    return None
+async def _load_knowledge_for(cell_id: str) -> str:
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute("SELECT title, content, tags, cells FROM knowledge ORDER BY created_at DESC") as cur:
+            rows = await cur.fetchall()
+    relevant = []
+    for r in rows:
+        cells = json.loads(r["cells"] or "[]")
+        if not cells or cell_id in cells:
+            relevant.append(f"### {r['title']}\n{r['content']}")
+    return "\n\n".join(relevant)
 
 
 async def handle_get_answer(cell, tx: dict):
@@ -192,32 +149,107 @@ async def handle_get_answer(cell, tx: dict):
     query = data.get("query", "")
     context = data.get("context", "")
 
+    knowledge = await _load_knowledge_for(cell_id)
+
+    system = SYSTEM_PROMPT
+    extras = []
+    if knowledge:
+        extras.append(f"Knowledge base:\n{knowledge}")
+    if context:
+        extras.append(f"Additional context:\n{context}")
+    if extras:
+        system += "\n\n" + "\n\n".join(extras)
+
     llm = get_model()
-    system = SYSTEM_PROMPT + (f"\n\nAdditional context:\n{context}" if context else "")
-    llm_messages = [
+    result = await asyncio.to_thread(llm.create_chat_completion, messages=[
         {"role": "system", "content": system},
         {"role": "user", "content": query},
-    ]
-    result = await asyncio.to_thread(llm.create_chat_completion, messages=llm_messages)
+    ])
     answer = result["choices"][0]["message"]["content"]
-
-    route = await route_to_agent(cell, query, cell_id)
-    suggestions = [{**s, "query": query, "context": answer} for s in route] if route else []
 
     conversation = [{"role": "user", "text": query}, {"role": "agent", "text": answer}]
     created_at = datetime.now(timezone.utc).isoformat()
 
     async with aiosqlite.connect(DB_PATH) as db:
         cursor = await db.execute(
-            "INSERT INTO tasks (cell_id, query, answer, created_at, status, suggestions, conversation) VALUES (?, ?, ?, ?, 'open', ?, ?)",
-            (cell_id, query, answer, created_at, json.dumps(suggestions), json.dumps(conversation))
+            "INSERT INTO tasks (cell_id, query, answer, created_at, status, suggestions, conversation) VALUES (?, ?, ?, ?, 'open', '[]', ?)",
+            (cell_id, query, answer, created_at, json.dumps(conversation))
         )
         task_id = cursor.lastrowid
         await db.commit()
 
     await cell.tx_response(
         tx_id=tx.get("tx_id"),
-        data={"json": {"answer": answer, "suggestions": suggestions, "task_id": task_id}},
+        data={"json": {"answer": answer, "task_id": task_id}},
+        client_public_key_str=data.get("public_key", "")
+    )
+
+
+async def _call_agent(cell, agent_id: str, creator: str, handle: str, query: str, context: str) -> str:
+    try:
+        result = await cell.activate_tx(
+            data={"handle": handle, "agent_id": agent_id, "query": query, "context": context},
+            cell_id=creator
+        )
+        json_result = result.get("data", {}).get("json", result.get("json", {}))
+        return json_result.get("answer", str(result))
+    except Exception as e:
+        return f"Error contacting agent: {e}"
+
+
+async def handle_template_task(cell, tx: dict):
+    data = tx.get("data", {})
+    cell_id = tx.get("sender", "")
+    query = data.get("query", "")
+    knowledge = data.get("knowledge", "")
+    context = f"Task knowledge:\n{knowledge}" if knowledge else ""
+
+    # Support single agent (legacy) or list of agents
+    agents = data.get("agents", [])
+    if not agents:
+        agent_id = data.get("target_agent_id", "")
+        creator = data.get("creator", "")
+        handle = data.get("target_handle", "")
+        if agent_id and creator:
+            agents = [{"agent_id": agent_id, "creator": creator, "handle": handle}]
+
+    if not agents:
+        await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"answer": "No agents specified.", "task_id": None}}, client_public_key_str=data.get("public_key", ""))
+        return
+
+    mode = data.get("mode", "parallel")
+
+    if mode == "sequential":
+        steps = []
+        step_context = context
+        for a in agents:
+            name = a.get("name", a["agent_id"])
+            result = await _call_agent(cell, a["agent_id"], a["creator"], a.get("handle", ""), query, step_context)
+            steps.append(f"**{name}:** {result}")
+            step_context = (context + "\n\n" if context else "") + f"Previous step ({name}):\n{result}"
+        answer = "\n\n".join(steps) if len(steps) > 1 else steps[0]
+    else:
+        results = await asyncio.gather(*[
+            _call_agent(cell, a["agent_id"], a["creator"], a.get("handle", ""), query, context)
+            for a in agents
+        ])
+        agent_names = [a.get("name", a["agent_id"]) for a in agents]
+        answer = results[0] if len(agents) == 1 else "\n\n".join(f"**{name}:** {r}" for name, r in zip(agent_names, results))
+
+    conversation = [{"role": "user", "text": query}, {"role": "agent", "text": answer}]
+    created_at = datetime.now(timezone.utc).isoformat()
+
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "INSERT INTO tasks (cell_id, query, answer, created_at, status, suggestions, conversation) VALUES (?, ?, ?, ?, 'open', '[]', ?)",
+            (cell_id, query, answer, created_at, json.dumps(conversation))
+        )
+        task_id = cursor.lastrowid
+        await db.commit()
+
+    await cell.tx_response(
+        tx_id=tx.get("tx_id"),
+        data={"json": {"answer": answer, "task_id": task_id}},
         client_public_key_str=data.get("public_key", "")
     )
 
@@ -366,14 +398,182 @@ async def handle_load_open_tasks(cell, tx: dict):
     )
 
 
-async def handle_get_ui(cell, tx: dict):
+async def handle_create_task_template(cell, tx: dict):
+    data = tx.get("data", {})
+    name = data.get("name", "").strip()
+    if not name:
+        await cell.tx_response(
+            tx_id=tx.get("tx_id"),
+            data={"json": {"ok": False, "error": "name is required"}},
+            client_public_key_str=data.get("public_key", "")
+        )
+        return
+    created_at = datetime.now(timezone.utc).isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "INSERT INTO task_templates (name, description, agents, employees, knowledge, mode, parameters, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
+            (name, data.get("description", ""), json.dumps(data.get("agents", [])), json.dumps(data.get("employees", [])), data.get("knowledge", ""), data.get("mode", "parallel"), json.dumps(data.get("parameters", [])), created_at)
+        )
+        template_id = cursor.lastrowid
+        await db.commit()
+    await cell.tx_response(
+        tx_id=tx.get("tx_id"),
+        data={"json": {"ok": True, "template_id": template_id}},
+        client_public_key_str=data.get("public_key", "")
+    )
+
+
+async def handle_load_task_templates(cell, tx: dict):
+    data = tx.get("data", {})
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute(
+            "SELECT id, name, description, agents, employees, knowledge, mode, parameters, created_at, last_used_at FROM task_templates ORDER BY CASE WHEN last_used_at != '' THEN last_used_at ELSE created_at END DESC"
+        ) as cur:
+            rows = await cur.fetchall()
+    templates = [
+        {
+            "id": r["id"],
+            "name": r["name"],
+            "description": r["description"],
+            "agents": json.loads(r["agents"] or "[]"),
+            "employees": json.loads(r["employees"] or "[]"),
+            "knowledge": r["knowledge"] or "",
+            "mode": r["mode"] or "parallel",
+            "parameters": json.loads(r["parameters"] or "[]"),
+            "created_at": r["created_at"],
+        }
+        for r in rows
+    ]
+    await cell.tx_response(
+        tx_id=tx.get("tx_id"),
+        data={"json": {"templates": templates}},
+        client_public_key_str=data.get("public_key", "")
+    )
+
+
+async def handle_use_task_template(cell, tx: dict):
+    data = tx.get("data", {})
+    template_id = data.get("template_id")
+    if template_id:
+        async with aiosqlite.connect(DB_PATH) as db:
+            await db.execute("UPDATE task_templates SET last_used_at = ? WHERE id = ?", (datetime.now(timezone.utc).isoformat(), template_id))
+            await db.commit()
+    await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": True}}, client_public_key_str=data.get("public_key", ""))
+
+
+async def handle_delete_task_template(cell, tx: dict):
+    data = tx.get("data", {})
+    template_id = data.get("template_id")
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("DELETE FROM task_templates WHERE id = ?", (template_id,))
+        await db.commit()
+    await cell.tx_response(
+        tx_id=tx.get("tx_id"),
+        data={"json": {"ok": True}},
+        client_public_key_str=data.get("public_key", "")
+    )
+
+
+async def handle_upload_knowledge(cell, tx: dict):
+    data = tx.get("data", {})
+    filename = data.get("filename", "")
+    content_b64 = data.get("content", "")
+    cells = data.get("cells", [])
+
+    if not content_b64:
+        await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": False, "error": "no content"}}, client_public_key_str=data.get("public_key", ""))
+        return
+
+    ext = os.path.splitext(filename)[1].lower()
+    try:
+        raw = base64.b64decode(content_b64)
+        if ext == ".pdf":
+            doc = await asyncio.to_thread(fitz.open, stream=raw, filetype="pdf")
+            text = "\n\n".join(page.get_text() for page in doc)
+            doc.close()
+        else:
+            text = raw.decode("utf-8", errors="ignore")
+    except Exception as e:
+        await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": False, "error": str(e)}}, client_public_key_str=data.get("public_key", ""))
+        return
+
+    title = os.path.splitext(filename)[0]
+    created_at = datetime.now(timezone.utc).isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "INSERT INTO knowledge (title, content, tags, cells, created_at) VALUES (?, ?, ?, ?, ?)",
+            (title, text[:20000], ext.lstrip("."), json.dumps(cells), created_at)
+        )
+        entry_id = cursor.lastrowid
+        await db.commit()
+
+    await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": True, "entry_id": entry_id, "title": title}}, client_public_key_str=data.get("public_key", ""))
+
+
+async def handle_add_knowledge(cell, tx: dict):
+    data = tx.get("data", {})
+    title = data.get("title", "").strip()
+    content = data.get("content", "").strip()
+    if not title or not content:
+        await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": False, "error": "title and content required"}}, client_public_key_str=data.get("public_key", ""))
+        return
+    created_at = datetime.now(timezone.utc).isoformat()
+    async with aiosqlite.connect(DB_PATH) as db:
+        cursor = await db.execute(
+            "INSERT INTO knowledge (title, content, tags, cells, created_at) VALUES (?, ?, ?, ?, ?)",
+            (title, content, data.get("tags", ""), json.dumps(data.get("cells", [])), created_at)
+        )
+        entry_id = cursor.lastrowid
+        await db.commit()
+    await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": True, "entry_id": entry_id}}, client_public_key_str=data.get("public_key", ""))
+
+
+async def handle_delete_knowledge(cell, tx: dict):
+    data = tx.get("data", {})
+    entry_id = data.get("entry_id")
+    async with aiosqlite.connect(DB_PATH) as db:
+        await db.execute("DELETE FROM knowledge WHERE id = ?", (entry_id,))
+        await db.commit()
+    await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"ok": True}}, client_public_key_str=data.get("public_key", ""))
+
+
+async def handle_load_knowledge(cell, tx: dict):
+    data = tx.get("data", {})
+    async with aiosqlite.connect(DB_PATH) as db:
+        db.row_factory = aiosqlite.Row
+        async with db.execute("SELECT id, title, content, tags, cells, created_at FROM knowledge ORDER BY created_at DESC") as cur:
+            rows = await cur.fetchall()
+    entries = [{"id": r["id"], "title": r["title"], "content": r["content"], "tags": r["tags"], "cells": json.loads(r["cells"] or "[]"), "created_at": r["created_at"]} for r in rows]
+    await cell.tx_response(tx_id=tx.get("tx_id"), data={"json": {"entries": entries}}, client_public_key_str=data.get("public_key", ""))
+
+
+async def handle_get_ui(cell, tx: dict, access_level: str = "employee"):
     data = tx.get("data", {})
     template = template_env.get_template("agent.html")
     host = cell.host or cell.env.get("HOST", "")
     operator = cell.env.get("OPERATOR", "")
-    all_cells = await cell.list_cells(True)
-    cells = [c for c in (all_cells or []) if "@" not in c.get("cell_id", "")]
-    html = template.render(host=host, operator=operator, cells=cells)
+    all_cells = await cell.list_cells(True) or []
+    cells = [c for c in all_cells if "@" not in c.get("cell_id", "")]
+    employees = [c for c in all_cells if "@" in c.get("cell_id", "")]
+    raw_agents = await cell.list_agents() or []
+    agents = []
+    for a in raw_agents:
+        try:
+            config = json.loads(a.get("config", "{}"))
+        except Exception:
+            config = {}
+        meta = config.get("agent_meta", {})
+        agents.append({
+            "agent_id": meta.get("agent_id", a.get("agent_id", "")),
+            "name": meta.get("name", a.get("agent_id", "")),
+            "logo": meta.get("logo", ""),
+            "description": meta.get("description", ""),
+            "creator": a.get("creator", ""),
+            "author": a.get("author", ""),
+            "verified": bool(a.get("verified", 0)),
+        })
+    html = template.render(host=host, operator=operator, cells=cells, employees=employees, agents=agents, access_level=access_level)
     await cell.tx_response(
         tx_id=tx.get("tx_id"),
         data={"html": html},
@@ -391,20 +591,31 @@ async def handle_tx(cell, tx: dict):
         server_host = cell.host or cell.env.get("HOST", "")
         agent_id = data.get("agent_id", None)
 
-        if not is_authorized(sender, server_host, agent_id):
+        authorized, access_level = is_authorized(sender, server_host, agent_id)
+        if not authorized:
             logging.warning(f"Access denied: '{sender}' attempted '{handle}'")
             return
 
         handlers = {
             "get_answer": lambda: handle_get_answer(cell, tx),
             "get_followup": lambda: handle_get_followup(cell, tx),
+            "template_task": lambda: handle_template_task(cell, tx),
             "read_file": lambda: handle_read_file(cell, tx),
             "append_messages": lambda: handle_append_messages(cell, tx),
             "finish_task": lambda: handle_finish_task(cell, tx),
             "load_tasks": lambda: handle_load_tasks(cell, tx),
             "load_open_tasks": lambda: handle_load_open_tasks(cell, tx),
-            "get_ui": lambda: handle_get_ui(cell, tx),
+            "load_task_templates": lambda: handle_load_task_templates(cell, tx),
+            "use_task_template": lambda: handle_use_task_template(cell, tx),
+            "add_knowledge": lambda: handle_add_knowledge(cell, tx),
+            "upload_knowledge": lambda: handle_upload_knowledge(cell, tx),
+            "load_knowledge": lambda: handle_load_knowledge(cell, tx),
+            "get_ui": lambda: handle_get_ui(cell, tx, access_level),
         }
+        if access_level == "admin":
+            handlers["create_task_template"] = lambda: handle_create_task_template(cell, tx)
+            handlers["delete_task_template"] = lambda: handle_delete_task_template(cell, tx)
+            handlers["delete_knowledge"] = lambda: handle_delete_knowledge(cell, tx)
 
         handler = handlers.get(handle)
         if handler:

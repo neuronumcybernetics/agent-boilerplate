@@ -35,11 +35,11 @@
 
     .results-panel {
       position: absolute;
-      top: 80px;
+      top: 64px;
       left: 50%;
       transform: translateX(-50%);
       width: min(860px, calc(100% - 40px));
-      bottom: 100px;
+      bottom: 88px;
       overflow-y: auto;
       display: flex;
       flex-direction: column;
@@ -58,33 +58,52 @@
 
     .results-panel::-webkit-scrollbar { display: none; }
 
-    /* ── Input dock: centered by default, slides to bottom on first send ─────── */
+    /* ── Template stage: centered launchpad ─────────────────────────────────── */
 
-    .command-center {
+    .template-stage {
       position: absolute;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      top: 50%;
-      width: min(560px, calc(100% - 40px));
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 80px;
       display: flex;
       flex-direction: column;
       align-items: center;
-      z-index: 2;
+      justify-content: center;
+      gap: 24px;
+      padding: 40px 20px 20px;
       pointer-events: none;
-      transition: top 0.35s cubic-bezier(0.4, 0, 0.2, 1),
-                  transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.25s;
+      z-index: 1;
     }
 
-    .command-center.docked {
-      top: 100%;
-      transform: translate(-50%, -100%);
+    .template-stage > * { pointer-events: all; }
+
+    .template-stage.hidden {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* ── Input bar: always fixed at bottom ───────────────────────────────────── */
+
+    .command-center {
+      position: absolute;
+      bottom: 0;
+      left: 50%;
+      transform: translateX(-50%);
+      width: min(560px, calc(100% - 40px));
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      z-index: 2;
       padding-bottom: 16px;
+      pointer-events: none;
     }
 
     .command-center > * { pointer-events: all; }
 
     .command-wrap {
-      width: 100%;
+      width: min(560px, calc(100% - 40px));
       background: rgba(255, 255, 255, 0.05);
       border: 1px solid rgba(255, 255, 255, 0.1);
       border-radius: 14px;
@@ -590,9 +609,78 @@
       font-weight: 600;
       color: rgba(255, 255, 255, 0.55);
       text-align: center;
-      margin-bottom: 14px;
       letter-spacing: -0.01em;
     }
+
+    .task-templates {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+      gap: 8px;
+      width: min(680px, calc(100% - 40px));
+    }
+    .task-template-card {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 12px;
+      padding: 14px 14px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      transition: background 0.15s, border-color 0.15s;
+    }
+    .task-template-card:hover {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.14);
+    }
+    .task-template-card.selected {
+      background: rgba(255,255,255,0.1);
+      border-color: rgba(255,255,255,0.25);
+    }
+    .task-template-card .tt-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+    }
+    .task-template-card .tt-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      line-height: 1.4;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      line-clamp: 2;
+      -webkit-box-orient: vertical;
+      flex: 1;
+    }
+    .tt-agent-logos {
+      display: flex;
+      gap: 0;
+      margin-top: 6px;
+    }
+    .tt-agent-logo {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      object-fit: cover;
+      border: 1.5px solid rgba(0,0,0,0.5);
+      margin-left: 6px;
+    }
+    .tt-agent-logo:first-child { margin-left: 0; }
+    .tt-agent-logo-placeholder {
+      width: 28px;
+      height: 28px;
+      border-radius: 7px;
+      background: rgba(255,255,255,0.1);
+      border: 1.5px solid rgba(0,0,0,0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 13px;
+      margin-left: 6px;
+      flex-shrink: 0;
+    }
+    .tt-agent-logo-placeholder:first-child { margin-left: 0; }
 
     /* ── Slider nav ──────────────────────────────────────────────────────────── */
 
@@ -800,6 +888,20 @@
 
     .search-result-item:last-child { border-bottom: none; }
     .search-result-item:hover { background: rgba(255, 255, 255, 0.05); }
+    .search-result-item.has-actions { flex-direction: row; align-items: center; gap: 8px; }
+    .search-result-item.has-actions .search-result-body { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 3px; }
+    .tt-delete-btn {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 4px 6px;
+      border-radius: 6px;
+      flex-shrink: 0;
+      transition: color 0.15s, background 0.15s;
+    }
+    .tt-delete-btn:hover { color: rgba(255,80,80,0.8); background: rgba(255,80,80,0.08); }
 
     .search-result-item.active { background: rgba(255, 255, 255, 0.07); }
 
@@ -838,10 +940,24 @@
 
     .search-filters {
       display: flex;
+      align-items: center;
       gap: 5px;
       padding: 10px 12px 8px;
       border-bottom: 1px solid rgba(255, 255, 255, 0.06);
     }
+    .search-refresh-btn {
+      margin-left: auto;
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 3px 5px;
+      border-radius: 5px;
+      transition: color 0.15s;
+      flex-shrink: 0;
+    }
+    .search-refresh-btn:hover { color: rgba(255,255,255,0.6); }
 
     .search-filter-badge {
       padding: 3px 10px;
@@ -937,12 +1053,303 @@
 
     .done-card-collapse:hover { color: rgba(255,255,255,0.55); }
 
+    /* ── Create Task button + panel (admin only) ─────────────────────────────── */
+
+    .fab-wrap {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      z-index: 200;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 8px;
+    }
+    .fab-menu {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 6px;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: opacity 0.15s, transform 0.15s;
+    }
+    .fab-wrap:hover .fab-menu {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateY(0);
+    }
+    .fab-menu-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(30,30,30,0.95);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 10px;
+      padding: 8px 14px;
+      cursor: pointer;
+      color: rgba(255,255,255,0.7);
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      white-space: nowrap;
+      transition: background 0.15s, color 0.15s;
+    }
+    .fab-menu-item:hover { background: rgba(255,255,255,0.1); color: rgba(255,255,255,0.95); }
+    .fab-menu-item i { font-size: 12px; opacity: 0.6; }
+    .create-task-btn {
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s, transform 0.15s;
+      flex-shrink: 0;
+    }
+    .create-task-btn:hover { background: rgba(255,255,255,0.13); color: rgba(255,255,255,0.85); }
+
+    .create-task-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.55);
+      z-index: 300;
+      align-items: center;
+      justify-content: center;
+    }
+    .create-task-overlay.open { display: flex; }
+
+    .create-task-panel {
+      background: #131313;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      padding: 28px;
+      width: 480px;
+      max-width: 90vw;
+      max-height: 85vh;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .create-task-panel h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.8);
+      margin: 0;
+    }
+    .ct-field { display: flex; flex-direction: column; gap: 6px; }
+    .ct-field label { font-size: 11px; color: rgba(255,255,255,0.35); }
+    .ct-field input, .ct-field textarea {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 7px;
+      color: rgba(255,255,255,0.75);
+      font-size: 12px;
+      padding: 8px 10px;
+      outline: none;
+      resize: none;
+      font-family: inherit;
+    }
+    .ct-field input:focus, .ct-field textarea:focus {
+      border-color: rgba(255,255,255,0.18);
+    }
+    .ct-checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 160px;
+      overflow-y: auto;
+    }
+    .ct-filter-input {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.7);
+      outline: none;
+      width: 100%;
+      margin-bottom: 4px;
+    }
+    .ct-filter-input::placeholder { color: rgba(255,255,255,0.2); }
+    .ct-filter-input:focus { border-color: rgba(255,255,255,0.18); }
+    .ct-checkbox-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      padding: 5px 8px;
+      border-radius: 7px;
+      transition: background 0.12s;
+    }
+    .ct-checkbox-row:hover { background: rgba(255,255,255,0.04); }
+    .ct-checkbox-row input[type=checkbox] { accent-color: rgba(255,255,255,0.5); cursor: pointer; flex-shrink: 0; }
+    .ct-agent-logo {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      object-fit: cover;
+      opacity: 0.8;
+      flex-shrink: 0;
+    }
+    .ct-agent-logo-placeholder {
+      width: 20px;
+      height: 20px;
+      border-radius: 5px;
+      background: rgba(255,255,255,0.08);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      flex-shrink: 0;
+    }
+    .ct-agent-info { display: flex; flex-direction: column; gap: 1px; }
+    .ct-agent-info .ct-agent-name { font-size: 12px; color: rgba(255,255,255,0.7); }
+    .ct-agent-info .ct-agent-desc { font-size: 10px; color: rgba(255,255,255,0.25); }
+    .ct-actions { display: flex; gap: 8px; justify-content: flex-end; margin-top: 4px; }
+    .ct-order-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 8px;
+      border-radius: 8px;
+      background: rgba(255,255,255,0.03);
+      border: 1px solid rgba(255,255,255,0.07);
+      margin-bottom: 4px;
+      cursor: grab;
+    }
+    .ct-order-item:active { cursor: grabbing; }
+    .ct-order-item.drag-over { border-color: rgba(255,255,255,0.25); background: rgba(255,255,255,0.07); }
+    .ct-order-step {
+      font-size: 10px;
+      color: rgba(255,255,255,0.3);
+      width: 16px;
+      flex-shrink: 0;
+      text-align: center;
+    }
+    .ct-order-arrows {
+      margin-left: auto;
+      display: flex;
+      gap: 2px;
+    }
+    .ct-order-arrows button {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.25);
+      cursor: pointer;
+      font-size: 10px;
+      padding: 2px 4px;
+      border-radius: 4px;
+      transition: color 0.12s;
+    }
+    .ct-order-arrows button:hover { color: rgba(255,255,255,0.7); }
+    .ct-order-logo {
+      width: 18px;
+      height: 18px;
+      border-radius: 4px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .ct-param-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ct-param-row input {
+      flex: 1;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 7px;
+      padding: 5px 10px;
+      font-size: 11px;
+      font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.7);
+      outline: none;
+    }
+    .ct-param-row input:focus { border-color: rgba(255,255,255,0.18); }
+    .ct-param-row input::placeholder { color: rgba(255,255,255,0.2); }
+    .ct-param-remove {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.2);
+      cursor: pointer;
+      font-size: 11px;
+      padding: 4px;
+      flex-shrink: 0;
+      transition: color 0.12s;
+    }
+    .ct-param-remove:hover { color: rgba(255,80,80,0.7); }
+    .tpl-params {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 5px;
+      padding: 8px 14px 0;
+    }
+    .tpl-param-hint {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 20px;
+      padding: 2px 9px;
+    }
+    .ct-mode-btn {
+      flex: 1;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 7px 12px;
+      border-radius: 8px;
+      border: 1px solid rgba(255,255,255,0.1);
+      cursor: pointer;
+      font-size: 12px;
+      color: rgba(255,255,255,0.35);
+      transition: background 0.15s, border-color 0.15s, color 0.15s;
+    }
+    .ct-mode-btn input[type=radio] { display: none; }
+    .ct-mode-btn:has(input:checked) {
+      background: rgba(255,255,255,0.08);
+      border-color: rgba(255,255,255,0.22);
+      color: rgba(255,255,255,0.85);
+    }
+    .ct-mode-btn:hover { border-color: rgba(255,255,255,0.18); color: rgba(255,255,255,0.6); }
+    .ct-cancel-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.1);
+      color: rgba(255,255,255,0.4);
+      font-size: 12px;
+      padding: 7px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    .ct-save-btn {
+      background: rgba(255,255,255,0.08);
+      border: 1px solid rgba(255,255,255,0.12);
+      color: rgba(255,255,255,0.8);
+      font-size: 12px;
+      padding: 7px 14px;
+      border-radius: 7px;
+      cursor: pointer;
+    }
+    .ct-save-btn:hover { background: rgba(255,255,255,0.13); }
+
   </style>
 </head>
 <body>
 
   <!-- Slider nav + upload -->
-  <div style="position:fixed;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:5px;z-index:100;">
+  <div style="position:fixed;top:16px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:8px;z-index:100;">
     <nav class="slider-nav" style="position:static;transform:none;">
       <button class="slider-tab active" id="tab-new"><i class="fa-regular fa-pen-to-square"></i></button>
       <button class="slider-tab" id="tab-tasks">Tasks</button>
@@ -950,7 +1357,7 @@
       <div class="nav-search-divider"></div>
       <div class="search-expand-wrap" id="search-expand-wrap">
         <i class="fa-solid fa-magnifying-glass" style="font-size:11px;color:rgba(255,255,255,0.25);margin-right:8px;margin-left:4px;"></i>
-        <input class="nav-search" id="nav-search" type="text" placeholder="Search..." />
+        <input class="nav-search" id="nav-search" type="text" placeholder="Search ..." />
       </div>
     </nav>
   </div>
@@ -974,8 +1381,9 @@
 
   <!-- Task view -->
   <div class="main-area visible" id="view-new">
-    <div class="command-center" id="command-center">
+    <div class="template-stage" id="template-stage">
       <div class="agent-greeting" id="agent-greeting">Hey {{ operator }}, what task needs to be done?</div>
+      <div class="task-templates" id="task-templates"></div>
       <div class="command-wrap" id="command-wrap">
         <div id="attach-badge" style="display:none;">
           <i class="fa-solid fa-file" style="font-size:11px;opacity:0.5;"></i>
@@ -990,8 +1398,162 @@
       </div>
     </div>
     <div class="results-panel" id="results-panel"></div>
+    <div class="command-center" id="command-center"></div>
   </div>
 
+
+<!-- FAB -->
+<div class="fab-wrap">
+  <div class="fab-menu" id="fab-menu">
+    {% if access_level == 'admin' %}
+    <button class="fab-menu-item" id="fab-create-template"><i class="fa-solid fa-layer-group"></i> Create Template</button>
+    {% endif %}
+    <button class="fab-menu-item" id="fab-add-knowledge"><i class="fa-solid fa-book"></i> Add Knowledge</button>
+  </div>
+  <button class="create-task-btn" id="create-task-btn"><i class="fa-solid fa-plus"></i></button>
+</div>
+
+<!-- Add Knowledge overlay -->
+<div class="create-task-overlay" id="knowledge-overlay">
+  <div class="create-task-panel">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+      <h3>Add Knowledge</h3>
+      <button id="kn-upload-btn" title="Upload document" style="background:none;border:1px solid rgba(255,255,255,0.1);border-radius:7px;color:rgba(255,255,255,0.35);font-size:12px;padding:4px 10px;cursor:pointer;display:flex;align-items:center;gap:5px;transition:color 0.15s,border-color 0.15s;">
+        <i class="fa-solid fa-paperclip"></i> Upload
+      </button>
+    </div>
+    <div class="ct-field">
+      <label>Title</label>
+      <input type="text" id="kn-title" placeholder="e.g. Refund Policy" />
+    </div>
+    <div class="ct-field">
+      <label>Content</label>
+      <textarea id="kn-content" rows="6" placeholder="Paste or write the knowledge content..."></textarea>
+    </div>
+    <div class="ct-field">
+      <label>Tags</label>
+      <input type="text" id="kn-tags" placeholder="e.g. policy, refunds" />
+    </div>
+    <div class="ct-field">
+      <label>Accessible by</label>
+      <input class="ct-filter-input" type="text" placeholder="Filter cells..." id="kn-cells-filter" />
+      <div class="ct-checkboxes" id="kn-cells">
+        <label class="ct-checkbox-row">
+          <input type="checkbox" value="__all__" id="kn-all" checked />
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);">All</span>
+        </label>
+        {% for e in employees %}
+        <label class="ct-checkbox-row">
+          <input type="checkbox" value="{{ e.cell_id }}" class="kn-cell-cb" />
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);">{{ e.cell_id }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+    <div class="ct-actions">
+      <button class="ct-cancel-btn" id="kn-cancel-btn">Cancel</button>
+      <button class="ct-save-btn" id="kn-save-btn">Save</button>
+    </div>
+  </div>
+</div>
+
+{% if access_level == 'admin' %}
+<!-- Create Task panel -->
+<div class="create-task-overlay" id="create-task-overlay">
+  <div class="create-task-panel">
+    <h3>Create Task Template</h3>
+
+    <div class="ct-field">
+      <label>Name</label>
+      <input type="text" id="ct-name" placeholder="e.g. Weekly Report" />
+    </div>
+
+    <div class="ct-field">
+      <label>Description</label>
+      <textarea id="ct-description" rows="3" placeholder="What does this task do?"></textarea>
+    </div>
+
+    <div class="ct-field">
+      <label>Task Knowledge & Instructions</label>
+      <textarea id="ct-knowledge" rows="4" placeholder="Add context, instructions, or background knowledge the agent should know when handling this task..."></textarea>
+    </div>
+
+    <div class="ct-field">
+      <label>Parameters <span style="color:rgba(255,255,255,0.25);font-size:10px;margin-left:4px;">optional — guide user input</span></label>
+      <div id="ct-params-list" style="display:flex;flex-direction:column;gap:4px;"></div>
+      <button type="button" id="ct-add-param" style="margin-top:4px;background:none;border:1px dashed rgba(255,255,255,0.12);border-radius:7px;color:rgba(255,255,255,0.3);font-size:11px;padding:5px 10px;cursor:pointer;text-align:left;transition:color 0.15s,border-color 0.15s;">
+        <i class="fa-solid fa-plus" style="margin-right:5px;"></i>Add parameter
+      </button>
+    </div>
+
+    <div class="ct-field">
+      <label>Agents <span id="ct-agents-count" style="color:rgba(255,255,255,0.25);font-size:10px;margin-left:4px;"></span></label>
+      <input class="ct-filter-input" type="text" placeholder="Filter agents..." id="ct-agents-filter" />
+      <div class="ct-checkboxes" id="ct-agents">
+        {% for a in agents %}
+        <label class="ct-checkbox-row">
+          <input type="checkbox" value="{{ a.agent_id }}" />
+          {% if a.logo %}
+          <img class="ct-agent-logo" src="{{ a.logo }}" alt="" />
+          {% else %}
+          <div class="ct-agent-logo-placeholder">&#x1F916;</div>
+          {% endif %}
+          <div class="ct-agent-info">
+            <span class="ct-agent-name">
+              {{ a.name }}
+              {% if a.verified %}<span style="font-size:9px;color:rgba(80,200,120,0.8);margin-left:4px;">✓ verified</span>{% endif %}
+            </span>
+            {% if a.description %}<span class="ct-agent-desc">{{ a.description }}</span>{% endif %}
+            {% if a.author %}<span class="ct-agent-desc" style="opacity:0.4;">by {{ a.author }}</span>{% endif %}
+          </div>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="ct-field" id="ct-order-field" style="display:none;">
+      <label>Step order <span style="color:rgba(255,255,255,0.25);font-size:10px;margin-left:4px;">drag or use arrows</span></label>
+      <div id="ct-order-list"></div>
+    </div>
+
+    <div class="ct-field">
+      <label>Execution mode</label>
+      <div style="display:flex;gap:8px;">
+        <label class="ct-mode-btn">
+          <input type="radio" name="ct-mode" value="parallel" checked />
+          <span><i class="fa-solid fa-bolt"></i> Parallel</span>
+        </label>
+        <label class="ct-mode-btn">
+          <input type="radio" name="ct-mode" value="sequential" />
+          <span><i class="fa-solid fa-arrow-right-arrow-left"></i> Step by step</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="ct-field">
+      <label>Employees who can use this task</label>
+      <input class="ct-filter-input" type="text" placeholder="Filter employees..." id="ct-employees-filter" />
+      <div class="ct-checkboxes" id="ct-employees">
+        <label class="ct-checkbox-row">
+          <input type="checkbox" value="__all__" id="ct-emp-all" checked />
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);">All</span>
+        </label>
+        {% for e in employees %}
+        <label class="ct-checkbox-row">
+          <input type="checkbox" value="{{ e.cell_id }}" class="ct-emp-cb" disabled />
+          <span style="font-size:12px;color:rgba(255,255,255,0.6);">{{ e.cell_id }}</span>
+        </label>
+        {% endfor %}
+      </div>
+    </div>
+
+    <div class="ct-actions">
+      <button class="ct-cancel-btn" id="ct-cancel-btn">Cancel</button>
+      <button class="ct-save-btn" id="ct-save-btn">Save Template</button>
+    </div>
+  </div>
+</div>
+{% endif %}
 
 <!-- File modal -->
 <div class="file-modal" id="file-modal">
@@ -1003,6 +1565,14 @@
 
 <script>
   marked.setOptions({ breaks: true });
+
+  const AGENT_MAP = {
+    {% for a in agents %}
+    "{{ a.agent_id }}": { name: "{{ a.name | replace('"', '\\"') }}", logo: "{{ a.logo }}", description: "{{ a.description | replace('"', '\\"') }}", creator: "{{ a.creator }}", author: "{{ a.author }}", verified: {{ 'true' if a.verified else 'false' }} },
+    {% endfor %}
+  };
+
+  const IS_ADMIN = {{ 'true' if access_level == 'admin' else 'false' }};
 
   function openFileModal(src) {
     const body = document.getElementById('file-modal-body');
@@ -1070,13 +1640,17 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
 
   async function buildSearchIndex() {
     try {
-      const [finished, open] = await Promise.all([
+      const [finished, open, tmpl, knwl] = await Promise.all([
         window.parent.pywebview.api.activate_tx(JSON.stringify({ handle: 'load_tasks' }), "{{ host }}"),
         window.parent.pywebview.api.activate_tx(JSON.stringify({ handle: 'load_open_tasks' }), "{{ host }}"),
+        window.parent.pywebview.api.activate_tx(JSON.stringify({ handle: 'load_task_templates' }), "{{ host }}"),
+        window.parent.pywebview.api.activate_tx(JSON.stringify({ handle: 'load_knowledge' }), "{{ host }}"),
       ]);
       const finishedTasks = (finished?.data?.json?.tasks ?? finished?.json?.tasks ?? []).map(t => ({ ...t, _type: 'finished' }));
       const openTasks = (open?.data?.json?.tasks ?? open?.json?.tasks ?? []).map(t => ({ ...t, _type: 'tasks' }));
-      searchIndex = [...finishedTasks, ...openTasks];
+      const templates = (tmpl?.data?.json?.templates ?? tmpl?.json?.templates ?? []).map(t => ({ ...t, _type: 'template' }));
+      const knowledge = (knwl?.data?.json?.entries ?? knwl?.json?.entries ?? []).map(t => ({ ...t, _type: 'knowledge' }));
+      searchIndex = [...finishedTasks, ...openTasks, ...templates, ...knowledge];
     } catch (_) {}
   }
 
@@ -1088,19 +1662,23 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
   }
 
   function renderSearchResults(q) {
-    if (!q) { searchPanel.classList.remove('open'); searchPanel.innerHTML = ''; return; }
+    if (!q && !document.activeElement === navSearchEl) { searchPanel.classList.remove('open'); searchPanel.innerHTML = ''; return; }
 
-    const filtered = searchIndex.filter(t => {
-      if (searchFilter !== 'all' && t._type !== searchFilter) return false;
-      return (t.query || '').toLowerCase().includes(q) || (t.answer || '').toLowerCase().includes(q);
-    }).slice(0, 4);
+    const filtered = q
+      ? searchIndex.filter(t => {
+          if (searchFilter !== 'all' && t._type !== searchFilter) return false;
+          if (t._type === 'template') return (t.name || '').toLowerCase().includes(q) || (t.description || '').toLowerCase().includes(q);
+          if (t._type === 'knowledge') return (t.title || '').toLowerCase().includes(q) || (t.content || '').toLowerCase().includes(q) || (t.tags || '').toLowerCase().includes(q);
+          return (t.query || '').toLowerCase().includes(q) || (t.answer || '').toLowerCase().includes(q);
+        }).slice(0, 6)
+      : searchIndex.filter(t => searchFilter === 'all' || t._type === searchFilter).slice(0, 6);
 
     searchPanel.innerHTML = '';
 
     // Filter badges
     const filtersEl = document.createElement('div');
     filtersEl.className = 'search-filters';
-    for (const [key, label] of [['all', 'All'], ['finished', 'Finished'], ['tasks', 'Tasks']]) {
+    for (const [key, label] of [['all', 'All'], ['knowledge', 'Knowledge'], ['template', 'Templates'], ['tasks', 'Tasks'], ['finished', 'Finished']]) {
       const badge = document.createElement('button');
       badge.className = 'search-filter-badge' + (searchFilter === key ? ' active' : '');
       badge.textContent = label;
@@ -1111,6 +1689,18 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
       });
       filtersEl.appendChild(badge);
     }
+    const refreshBtn = document.createElement('button');
+    refreshBtn.className = 'search-refresh-btn';
+    refreshBtn.title = 'Refresh';
+    refreshBtn.innerHTML = '<i class="fa-solid fa-rotate-right"></i>';
+    refreshBtn.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      refreshBtn.style.opacity = '0.4';
+      await buildSearchIndex();
+      refreshBtn.style.opacity = '';
+      renderSearchResults(navSearchEl.value.trim().toLowerCase());
+    });
+    filtersEl.appendChild(refreshBtn);
     searchPanel.appendChild(filtersEl);
 
     if (!filtered.length) {
@@ -1119,25 +1709,78 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
       empty.textContent = 'No results found.';
       searchPanel.appendChild(empty);
     } else {
-      const tagLabel = { finished: 'Finished', tasks: 'Tasks' };
+      const tagLabel = { finished: 'Finished', tasks: 'Open', template: 'Template', knowledge: 'Knowledge' };
       for (const t of filtered) {
         const item = document.createElement('div');
         item.className = 'search-result-item';
-        item.innerHTML = `
-          <div class="search-result-tag">${tagLabel[t._type] || t._type}</div>
-          <div class="search-result-query">${t.query}</div>
-          ${t.answer ? `<div class="search-result-snippet">${t.answer.replace(/\n/g, ' ').slice(0, 100)}</div>` : ''}
-        `;
-        item.addEventListener('click', () => {
-          closeSearch();
-          if (t._type === 'finished') {
-            setActiveTab({ tab: tabDone, view: viewDone });
-            loadFinishedTasks();
-          } else if (t._type === 'tasks') {
-            setActiveTab({ tab: tabTasks, view: viewTasks });
-            loadOpenTasks();
-          }
-        });
+        if (t._type === 'knowledge') {
+          item.classList.add(IS_ADMIN ? 'has-actions' : '');
+          item.innerHTML = `
+            <div class="search-result-body">
+              <div class="search-result-tag">${tagLabel.knowledge}</div>
+              <div class="search-result-query">${t.title}</div>
+              ${t.content ? `<div class="search-result-snippet">${t.content.replace(/\n/g, ' ').slice(0, 100)}</div>` : ''}
+              ${t.tags ? `<div class="search-result-snippet" style="opacity:0.5;">${t.tags}</div>` : ''}
+            </div>
+            ${IS_ADMIN ? `<button class="tt-delete-btn" title="Delete"><i class="fa-solid fa-trash"></i></button>` : ''}
+          `;
+          item.querySelector('.tt-delete-btn')?.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await window.parent.pywebview.api.activate_tx(
+              JSON.stringify({ handle: 'delete_knowledge', entry_id: t.id }), "{{ host }}"
+            ).catch(() => {});
+            searchIndex = searchIndex.filter(s => !(s._type === 'knowledge' && s.id === t.id));
+            renderSearchResults(navSearchEl.value.trim().toLowerCase());
+          });
+        } else if (t._type === 'template') {
+          const agentIds = Array.isArray(t.agents) ? t.agents : [];
+          const logosHtml = agentIds.map(id => {
+            const a = AGENT_MAP[id];
+            return a?.logo ? `<img src="${a.logo}" style="width:14px;height:14px;border-radius:3px;vertical-align:middle;margin-right:2px;opacity:0.7;" />` : '';
+          }).join('');
+          item.classList.add(IS_ADMIN ? 'has-actions' : '');
+          item.innerHTML = `
+            <div class="search-result-body">
+              <div class="search-result-tag">${tagLabel.template}</div>
+              <div class="search-result-query">${logosHtml}${t.name}</div>
+              ${t.description ? `<div class="search-result-snippet">${t.description}</div>` : ''}
+            </div>
+            ${IS_ADMIN ? `<button class="tt-delete-btn" title="Delete template"><i class="fa-solid fa-trash"></i></button>` : ''}
+          `;
+          item.querySelector('.tt-delete-btn')?.addEventListener('click', async (e) => {
+            e.stopPropagation();
+            await window.parent.pywebview.api.activate_tx(
+              JSON.stringify({ handle: 'delete_task_template', template_id: t.id }), "{{ host }}"
+            ).catch(() => {});
+            searchIndex = searchIndex.filter(s => !(s._type === 'template' && s.id === t.id));
+            renderSearchResults(navSearchEl.value.trim().toLowerCase());
+            loadAndRenderTemplates();
+          });
+          item.addEventListener('click', () => {
+            closeSearch();
+            setActiveTab({ tab: tabNew, view: viewNew });
+            if (templateStage.classList.contains('hidden')) undockInput();
+            activeTemplate = t;
+            taskTemplatesEl?.querySelectorAll('.task-template-card').forEach(c => c.classList.remove('selected'));
+            renderParamForm(t);
+          });
+        } else {
+          item.innerHTML = `
+            <div class="search-result-tag">${tagLabel[t._type] || t._type}</div>
+            <div class="search-result-query">${t.query}</div>
+            ${t.answer ? `<div class="search-result-snippet">${t.answer.replace(/\n/g, ' ').slice(0, 100)}</div>` : ''}
+          `;
+          item.addEventListener('click', () => {
+            closeSearch();
+            if (t._type === 'finished') {
+              setActiveTab({ tab: tabDone, view: viewDone });
+              loadFinishedTasks();
+            } else if (t._type === 'tasks') {
+              setActiveTab({ tab: tabTasks, view: viewTasks });
+              loadOpenTasks();
+            }
+          });
+        }
         searchPanel.appendChild(item);
       }
     }
@@ -1146,6 +1789,10 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
 
   navSearchEl.addEventListener('input', (e) => {
     renderSearchResults(e.target.value.trim().toLowerCase());
+  });
+
+  navSearchEl.addEventListener('focus', () => {
+    renderSearchResults(navSearchEl.value.trim().toLowerCase());
   });
 
   document.addEventListener('click', (e) => {
@@ -1315,18 +1962,50 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
   const sendBtn = document.getElementById('send-btn');
   const agentGreeting = document.getElementById('agent-greeting');
   const commandCenter = document.getElementById('command-center');
+  const templateStage = document.getElementById('template-stage');
+  const commandWrap = document.getElementById('command-wrap');
   let activeCard = null;
+  let activeTemplate = null;
+
+  // ── Parameter form ────────────────────────────────────────────────────────
+  let paramFormEl = null;
+
+  function clearParamForm() {
+    if (paramFormEl) { paramFormEl.remove(); paramFormEl = null; }
+  }
+
+  function renderParamForm(t) {
+    clearParamForm();
+    const params = Array.isArray(t.parameters) ? t.parameters : [];
+    if (params.length) {
+      paramFormEl = document.createElement('div');
+      paramFormEl.className = 'tpl-params';
+      paramFormEl.innerHTML = params.map(p =>
+        `<span class="tpl-param-hint">${p.label || p.key}</span>`
+      ).join('');
+      commandWrap.insertBefore(paramFormEl, commandWrap.firstChild);
+    }
+    inputEl.value = t.name + ': ';
+    inputEl.dispatchEvent(new Event('input'));
+    inputEl.focus();
+    inputEl.setSelectionRange(inputEl.value.length, inputEl.value.length);
+  }
 
   function dockInput() {
-    commandCenter.classList.add('docked');
     feedEl.classList.add('has-results');
-    agentGreeting.style.display = 'none';
+    if (templateStage) templateStage.classList.add('hidden');
+    clearParamForm();
+    commandCenter.appendChild(commandWrap);
   }
 
   function undockInput() {
-    commandCenter.classList.remove('docked');
     feedEl.classList.remove('has-results');
-    agentGreeting.style.display = '';
+    clearParamForm();
+    if (templateStage) {
+      templateStage.classList.remove('hidden');
+      templateStage.appendChild(commandWrap);
+    }
+    loadAndRenderTemplates();
   }
 
   function updateGreeting() {
@@ -1550,29 +2229,48 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
       return;
     }
 
+    const template = activeTemplate;
+    activeTemplate = null;
+    clearParamForm();
+    taskTemplatesEl?.querySelectorAll('.task-template-card.selected').forEach(c => c.classList.remove('selected'));
+
     const attachment = pendingAttachment;
     clearAttachment();
 
     const contextParts = [];
     if (attachment) contextParts.push(`File: ${attachment.filename}\n\n${attachment.context}`);
+    const context = contextParts.join('\n\n');
 
     const card = createCard(attachment ? `${query}  [${attachment.filename}]` : query);
 
     try {
-      const result = await window.parent.pywebview.api.activate_tx(
-        JSON.stringify({
-          handle: 'get_answer',
-          query,
-          context: contextParts.join('\n\n'),
-        }),
-        "{{ host }}"
-      );
-
-      const json = result?.data?.json ?? result?.json ?? result ?? {};
-      const answer = json?.answer ?? JSON.stringify(json);
-      const suggestions = json?.suggestions?.length ? json.suggestions : null;
-      if (json?.task_id) card._taskId = json.task_id;
-      setCardDone(card, answer, query, 'Team Agent', '', suggestions);
+      if (template?.agents?.length) {
+        if (template.id) {
+          window.parent.pywebview.api.activate_tx(
+            JSON.stringify({ handle: 'use_task_template', template_id: template.id }), "{{ host }}"
+          ).catch(() => {});
+        }
+        const agents = template.agents.map(agent_id => {
+          const a = AGENT_MAP[agent_id] || {};
+          return { agent_id, creator: a.creator || '', handle: '', name: a.name || agent_id };
+        });
+        const result = await window.parent.pywebview.api.activate_tx(
+          JSON.stringify({ handle: 'template_task', query, context, knowledge: template.knowledge || '', agents, mode: template.mode || 'parallel' }),
+          "{{ host }}"
+        );
+        const json = result?.data?.json ?? result?.json ?? result ?? {};
+        if (json?.task_id) card._taskId = json.task_id;
+        setCardDone(card, json?.answer ?? '', query, template.name, context);
+      } else {
+        const result = await window.parent.pywebview.api.activate_tx(
+          JSON.stringify({ handle: 'get_answer', query, context }),
+          "{{ host }}"
+        );
+        const json = result?.data?.json ?? result?.json ?? result ?? {};
+        const answer = json?.answer ?? JSON.stringify(json);
+        if (json?.task_id) card._taskId = json.task_id;
+        setCardDone(card, answer, query, 'Team Agent', '', null);
+      }
     } catch (e) {
       setCardError(card, `Error: ${e.message || e}`);
     } finally {
@@ -1651,12 +2349,328 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
   });
 
-  inputEl.addEventListener('input', () => {
+  inputEl.addEventListener('input', (e) => {
     inputEl.style.height = 'auto';
     inputEl.style.height = inputEl.scrollHeight + 'px';
     sendBtn.disabled = !inputEl.value.trim();
+    if (e.isTrusted && activeTemplate) {
+      const prefix = activeTemplate.name + ': ';
+      if (!inputEl.value.startsWith(activeTemplate.name)) {
+        activeTemplate = null;
+        taskTemplatesEl?.querySelectorAll('.task-template-card.selected').forEach(c => c.classList.remove('selected'));
+      }
+    }
   });
 
+  // ── Task templates ────────────────────────────────────────────────────────
+
+  const taskTemplatesEl = document.getElementById('task-templates');
+
+  function renderTemplates(templates = []) {
+    if (!taskTemplatesEl) return;
+    taskTemplatesEl.innerHTML = '';
+    for (const t of templates.slice(0, 4)) {
+      const card = document.createElement('div');
+      card.className = 'task-template-card';
+
+      const agentIds = Array.isArray(t.agents) ? t.agents : [];
+      const logosHtml = agentIds.length
+        ? `<div class="tt-agent-logos">${agentIds.map(id => {
+            const a = AGENT_MAP[id];
+            return a?.logo
+              ? `<img class="tt-agent-logo" src="${a.logo}" alt="${a.name || ''}" title="${a.name || ''}" />`
+              : `<div class="tt-agent-logo-placeholder" title="${a?.name || id}">🤖</div>`;
+          }).join('')}</div>`
+        : '';
+
+      card.innerHTML = `
+        <div class="tt-name">${t.name}</div>
+        ${t.description ? `<div class="tt-desc">${t.description}</div>` : ''}
+        ${logosHtml}
+      `;
+      card.addEventListener('click', () => {
+        if (card.classList.contains('selected')) {
+          card.classList.remove('selected');
+          activeTemplate = null;
+          clearParamForm();
+          inputEl.value = '';
+          inputEl.dispatchEvent(new Event('input'));
+          return;
+        }
+        activeTemplate = t;
+        taskTemplatesEl.querySelectorAll('.task-template-card').forEach(c => c.classList.remove('selected'));
+        card.classList.add('selected');
+        renderParamForm(t);
+      });
+      taskTemplatesEl.appendChild(card);
+    }
+    taskTemplatesEl.style.display = templates.length ? 'grid' : 'none';
+  }
+
+  async function loadAndRenderTemplates() {
+    try {
+      const result = await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'load_task_templates' }), "{{ host }}"
+      );
+      const templates = result?.data?.json?.templates ?? result?.json?.templates ?? [];
+      renderTemplates(templates);
+    } catch { renderTemplates([]); }
+  }
+
+  loadAndRenderTemplates();
+
+  // ── Create Task (admin only) ───────────────────────────────────────────────
+
+  // ── FAB menu ──────────────────────────────────────────────────────────────
+  const fabMenu = document.getElementById('fab-menu');
+  const createTaskBtn = document.getElementById('create-task-btn');
+
+  // ── Create Template (admin) ────────────────────────────────────────────────
+  const createTaskOverlay = document.getElementById('create-task-overlay');
+  const ctCancelBtn = document.getElementById('ct-cancel-btn');
+  const ctSaveBtn = document.getElementById('ct-save-btn');
+
+  document.getElementById('fab-create-template')?.addEventListener('click', () => {
+    createTaskOverlay.classList.add('open');
+  });
+
+  if (createTaskOverlay) {
+    ctCancelBtn.addEventListener('click', () => createTaskOverlay.classList.remove('open'));
+    createTaskOverlay.addEventListener('click', (e) => {
+      if (e.target === createTaskOverlay) createTaskOverlay.classList.remove('open');
+    });
+
+    ctSaveBtn.addEventListener('click', async () => {
+      const name = document.getElementById('ct-name').value.trim();
+      const description = document.getElementById('ct-description').value.trim();
+      const knowledge = document.getElementById('ct-knowledge').value.trim();
+      const mode = document.querySelector('input[name="ct-mode"]:checked')?.value || 'parallel';
+      const agents = mode === 'sequential' && document.querySelectorAll('#ct-order-list .ct-order-item').length
+        ? [...document.querySelectorAll('#ct-order-list .ct-order-item')].map(el => el.dataset.agentId)
+        : [...document.querySelectorAll('#ct-agents input:checked')].map(el => el.value);
+      const employees = document.getElementById('ct-emp-all')?.checked
+        ? []
+        : [...document.querySelectorAll('.ct-emp-cb:checked')].map(el => el.value);
+
+      const parameters = [...document.querySelectorAll('#ct-params-list .ct-param-row')].reduce((acc, row) => {
+        const key = row.querySelector('.ct-param-key').value.trim();
+        const label = row.querySelector('.ct-param-label').value.trim();
+        if (key) acc.push({ key, label: label || key });
+        return acc;
+      }, []);
+
+      if (!name) { document.getElementById('ct-name').focus(); return; }
+
+      try {
+        await window.parent.pywebview.api.activate_tx(
+          JSON.stringify({ handle: 'create_task_template', name, description, knowledge, agents, employees, mode, parameters }),
+          "{{ host }}"
+        );
+        await loadAndRenderTemplates();
+      } catch (e) { console.error('Failed to save template:', e); }
+
+      createTaskOverlay.classList.remove('open');
+      document.getElementById('ct-name').value = '';
+      document.getElementById('ct-description').value = '';
+      document.getElementById('ct-knowledge').value = '';
+      document.querySelectorAll('#ct-agents input[type=checkbox]').forEach(el => el.checked = false);
+      document.querySelector('input[name="ct-mode"][value="parallel"]').checked = true;
+      document.getElementById('ct-order-list').innerHTML = '';
+      document.getElementById('ct-order-field').style.display = 'none';
+      document.getElementById('ct-emp-all').checked = true;
+      document.getElementById('ct-params-list').innerHTML = '';
+      document.querySelectorAll('.ct-emp-cb').forEach(el => { el.checked = false; el.disabled = true; });
+    });
+
+    document.getElementById('ct-emp-all')?.addEventListener('change', (e) => {
+      document.querySelectorAll('.ct-emp-cb').forEach(cb => {
+        cb.checked = false;
+        cb.disabled = e.target.checked;
+      });
+    });
+    document.querySelectorAll('.ct-emp-cb').forEach(cb => {
+      cb.addEventListener('change', () => {
+        if (cb.checked) document.getElementById('ct-emp-all').checked = false;
+      });
+    });
+
+    // Filter inputs
+    document.getElementById('ct-agents-filter')?.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('#ct-agents .ct-checkbox-row').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+
+    document.getElementById('ct-employees-filter')?.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase();
+      document.querySelectorAll('#ct-employees .ct-checkbox-row').forEach(row => {
+        row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+      });
+    });
+
+    const orderList = document.getElementById('ct-order-list');
+    const orderField = document.getElementById('ct-order-field');
+    let dragSrc = null;
+
+    const isSequential = () => document.querySelector('input[name="ct-mode"]:checked')?.value === 'sequential';
+
+    const renderOrderList = () => {
+      const checked = [...document.querySelectorAll('#ct-agents input[type=checkbox]:checked')];
+      orderField.style.display = isSequential() && checked.length > 1 ? '' : 'none';
+      if (!isSequential()) return;
+
+      const existing = [...orderList.querySelectorAll('.ct-order-item')].map(el => el.dataset.agentId);
+      const checkedIds = checked.map(cb => cb.value);
+      // remove unchecked
+      existing.filter(id => !checkedIds.includes(id)).forEach(id => {
+        orderList.querySelector(`[data-agent-id="${id}"]`)?.remove();
+      });
+      // add newly checked (not yet in list)
+      checkedIds.filter(id => !existing.includes(id)).forEach(id => {
+        const a = AGENT_MAP[id] || {};
+        const item = document.createElement('div');
+        item.className = 'ct-order-item';
+        item.dataset.agentId = id;
+        item.draggable = true;
+        item.innerHTML = `
+          <span class="ct-order-step"></span>
+          ${a.logo ? `<img class="ct-order-logo" src="${a.logo}" />` : '<span style="font-size:14px;">🤖</span>'}
+          <span style="font-size:12px;color:rgba(255,255,255,0.7);flex:1;">${a.name || id}</span>
+          <div class="ct-order-arrows">
+            <button type="button" title="Move up"><i class="fa-solid fa-chevron-up"></i></button>
+            <button type="button" title="Move down"><i class="fa-solid fa-chevron-down"></i></button>
+          </div>`;
+
+        const [upBtn, downBtn] = item.querySelectorAll('button');
+        upBtn.addEventListener('click', () => { const prev = item.previousElementSibling; if (prev) { orderList.insertBefore(item, prev); updateStepNumbers(); } });
+        downBtn.addEventListener('click', () => { const next = item.nextElementSibling; if (next) { orderList.insertBefore(next, item); updateStepNumbers(); } });
+
+        item.addEventListener('dragstart', () => { dragSrc = item; setTimeout(() => item.style.opacity = '0.4', 0); });
+        item.addEventListener('dragend', () => { item.style.opacity = ''; orderList.querySelectorAll('.ct-order-item').forEach(el => el.classList.remove('drag-over')); updateStepNumbers(); });
+        item.addEventListener('dragover', (e) => { e.preventDefault(); item.classList.add('drag-over'); });
+        item.addEventListener('dragleave', () => item.classList.remove('drag-over'));
+        item.addEventListener('drop', (e) => { e.preventDefault(); if (dragSrc && dragSrc !== item) { orderList.insertBefore(dragSrc, item); } item.classList.remove('drag-over'); updateStepNumbers(); });
+
+        orderList.appendChild(item);
+      });
+      updateStepNumbers();
+    };
+
+    const updateStepNumbers = () => {
+      orderList.querySelectorAll('.ct-order-step').forEach((el, i) => el.textContent = i + 1);
+    };
+
+    const updateAgentCount = () => {
+      const count = document.querySelectorAll('#ct-agents input:checked').length;
+      const el = document.getElementById('ct-agents-count');
+      if (el) el.textContent = count > 0 ? `${count} selected` : '';
+      renderOrderList();
+    };
+
+    document.getElementById('ct-agents')?.addEventListener('change', updateAgentCount);
+    document.querySelectorAll('input[name="ct-mode"]').forEach(r => r.addEventListener('change', renderOrderList));
+
+    // ── Parameter builder ──────────────────────────────────────────────────
+    const paramsList = document.getElementById('ct-params-list');
+    const addParamBtn = document.getElementById('ct-add-param');
+
+    const addParamRow = (key = '', label = '') => {
+      const row = document.createElement('div');
+      row.className = 'ct-param-row';
+      row.innerHTML = `
+        <input type="text" placeholder="key (e.g. name)" value="${key}" class="ct-param-key" />
+        <input type="text" placeholder="label (e.g. Contact name)" value="${label}" class="ct-param-label" />
+        <button type="button" class="ct-param-remove" title="Remove"><i class="fa-solid fa-xmark"></i></button>
+      `;
+      row.querySelector('.ct-param-remove').addEventListener('click', () => row.remove());
+      paramsList.appendChild(row);
+    };
+
+    addParamBtn.addEventListener('click', () => addParamRow());
+  }
+
+  // ── Add Knowledge ──────────────────────────────────────────────────────────
+  const knowledgeOverlay = document.getElementById('knowledge-overlay');
+  const knCancelBtn = document.getElementById('kn-cancel-btn');
+  const knSaveBtn = document.getElementById('kn-save-btn');
+
+  document.getElementById('fab-add-knowledge').addEventListener('click', () => {
+    knowledgeOverlay.classList.add('open');
+  });
+
+  document.getElementById('kn-upload-btn').addEventListener('click', async () => {
+    try {
+      const dialogResult = await window.parent.pywebview.api.open_file_dialog(false, true);
+      if (!dialogResult?.paths?.length) return;
+      const result = await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'read_file', filename: dialogResult.filename, content: dialogResult.content }),
+        "{{ host }}"
+      );
+      const text = result?.data?.json?.context ?? result?.json?.context ?? '';
+      document.getElementById('kn-title').value = dialogResult.filename.replace(/\.[^/.]+$/, '');
+      document.getElementById('kn-content').value = text;
+      document.getElementById('kn-tags').value = dialogResult.filename.split('.').pop().toLowerCase();
+    } catch (e) { console.error('Upload failed:', e); }
+  });
+
+  knCancelBtn.addEventListener('click', () => knowledgeOverlay.classList.remove('open'));
+  knowledgeOverlay.addEventListener('click', (e) => {
+    if (e.target === knowledgeOverlay) knowledgeOverlay.classList.remove('open');
+  });
+
+  // "All" toggles individual cell checkboxes
+  document.getElementById('kn-all')?.addEventListener('change', (e) => {
+    document.querySelectorAll('.kn-cell-cb').forEach(cb => {
+      cb.checked = false;
+      cb.disabled = e.target.checked;
+    });
+  });
+  document.querySelectorAll('.kn-cell-cb').forEach(cb => {
+    cb.disabled = true;
+    cb.addEventListener('change', () => {
+      if (cb.checked) document.getElementById('kn-all').checked = false;
+    });
+  });
+
+  document.getElementById('kn-cells-filter')?.addEventListener('input', (e) => {
+    const q = e.target.value.toLowerCase();
+    document.querySelectorAll('#kn-cells .ct-checkbox-row').forEach(row => {
+      if (row.querySelector('#kn-all')) return; // always show All row
+      row.style.display = row.textContent.toLowerCase().includes(q) ? '' : 'none';
+    });
+  });
+
+  knSaveBtn.addEventListener('click', async () => {
+    const title = document.getElementById('kn-title').value.trim();
+    const content = document.getElementById('kn-content').value.trim();
+    const tags = document.getElementById('kn-tags').value.trim();
+
+    if (!title || !content) {
+      if (!title) document.getElementById('kn-title').focus();
+      else document.getElementById('kn-content').focus();
+      return;
+    }
+
+    const allChecked = document.getElementById('kn-all')?.checked;
+    const cells = allChecked
+      ? []
+      : [...document.querySelectorAll('.kn-cell-cb:checked')].map(cb => cb.value);
+
+    try {
+      await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'add_knowledge', title, content, tags, cells }),
+        "{{ host }}"
+      );
+    } catch (e) { console.error('Failed to save knowledge:', e); }
+
+    knowledgeOverlay.classList.remove('open');
+    document.getElementById('kn-title').value = '';
+    document.getElementById('kn-content').value = '';
+    document.getElementById('kn-tags').value = '';
+    document.getElementById('kn-all').checked = true;
+    document.querySelectorAll('.kn-cell-cb').forEach(cb => { cb.checked = false; cb.disabled = true; });
+  });
 
 </script>
 
