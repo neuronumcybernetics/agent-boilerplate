@@ -127,6 +127,19 @@ SYSTEM_PROMPT = (
     "Structure your response as: reasoning first, then a clear answer."
 )
 
+HELP_PROMPT = (
+    "You are a helpful assistant embedded in a business agent workspace. "
+    "Your job is to answer questions about how to use the workspace. "
+    "The workspace has the following features:\n"
+    "- Task Templates: pre-configured workflows that route tasks to one or more AI agents. Admins create them, employees use them.\n"
+    "- Agents: external AI agents (e.g. CRM Agent, Email Agent, ERP Agent) that handle specialized tasks.\n"
+    "- Knowledge Base: a searchable store of documents and notes used as context by the local AI.\n"
+    "- Tasks: conversations and results are saved as tasks (open or finished) and searchable.\n"
+    "- Step-by-step mode: templates can chain agents sequentially, passing each agent's output as context to the next.\n"
+    "- Parallel mode: templates can run multiple agents simultaneously and combine their answers.\n"
+    "Be concise, friendly, and practical. If the user asks something unrelated to the workspace, politely redirect them."
+)
+
 # ── Handlers ─────────────────────────────────────────────────────────────────
 
 
@@ -141,6 +154,22 @@ async def _load_knowledge_for(cell_id: str) -> str:
         if not cells or cell_id in cells:
             relevant.append(f"### {r['title']}\n{r['content']}")
     return "\n\n".join(relevant)
+
+
+async def handle_get_help(cell, tx: dict):
+    data = tx.get("data", {})
+    query = data.get("query", "")
+    llm = get_model()
+    result = await asyncio.to_thread(llm.create_chat_completion, messages=[
+        {"role": "system", "content": HELP_PROMPT},
+        {"role": "user", "content": query},
+    ])
+    answer = result["choices"][0]["message"]["content"]
+    await cell.tx_response(
+        tx_id=tx.get("tx_id"),
+        data={"json": {"answer": answer}},
+        client_public_key_str=data.get("public_key", "")
+    )
 
 
 async def handle_get_answer(cell, tx: dict):
@@ -598,6 +627,7 @@ async def handle_tx(cell, tx: dict):
 
         handlers = {
             "get_answer": lambda: handle_get_answer(cell, tx),
+            "get_help": lambda: handle_get_help(cell, tx),
             "get_followup": lambda: handle_get_followup(cell, tx),
             "template_task": lambda: handle_template_task(cell, tx),
             "read_file": lambda: handle_read_file(cell, tx),

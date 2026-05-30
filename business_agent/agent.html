@@ -1065,6 +1065,180 @@
       align-items: flex-end;
       gap: 8px;
     }
+
+    .help-btn {
+      position: fixed;
+      bottom: 24px;
+      left: 24px;
+      z-index: 200;
+      width: 36px;
+      height: 36px;
+      background: rgba(255,255,255,0.07);
+      border: 1px solid rgba(255,255,255,0.12);
+      border-radius: 10px;
+      color: rgba(255,255,255,0.5);
+      font-size: 14px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: background 0.15s, color 0.15s;
+    }
+    .help-btn:hover { background: rgba(255,255,255,0.13); color: rgba(255,255,255,0.85); }
+
+    /* ── Help panel ──────────────────────────────────────────────────────────── */
+
+    .help-panel {
+      position: fixed;
+      bottom: 72px;
+      left: 24px;
+      width: 360px;
+      max-width: calc(100vw - 48px);
+      height: 520px;
+      background: #111;
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 14px;
+      z-index: 250;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(12px);
+      transition: opacity 0.2s, transform 0.2s cubic-bezier(0.4,0,0.2,1);
+    }
+    .help-panel.open { opacity: 1; pointer-events: all; transform: translateY(0); }
+    .help-panel-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .help-panel-header span {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255,255,255,0.7);
+    }
+    .help-panel-close {
+      background: none;
+      border: none;
+      color: rgba(255,255,255,0.3);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 2px 4px;
+      transition: color 0.15s;
+    }
+    .help-panel-close:hover { color: rgba(255,255,255,0.7); }
+    .help-messages {
+      flex: 1;
+      overflow-y: auto;
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      scrollbar-width: none;
+    }
+    .help-messages::-webkit-scrollbar { display: none; }
+    .help-msg {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+      max-width: 88%;
+    }
+    .help-msg.user { align-self: flex-end; align-items: flex-end; }
+    .help-msg.agent { align-self: flex-start; }
+    .help-msg-bubble {
+      font-size: 12px;
+      line-height: 1.5;
+      padding: 8px 12px;
+      border-radius: 10px;
+    }
+    .help-msg.user .help-msg-bubble {
+      background: rgba(255,255,255,0.08);
+      color: rgba(255,255,255,0.85);
+      border-radius: 10px 10px 3px 10px;
+    }
+    .help-msg.agent .help-msg-bubble {
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.07);
+      color: rgba(255,255,255,0.7);
+      border-radius: 10px 10px 10px 3px;
+    }
+    .help-typing {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+      padding: 8px 12px;
+    }
+    .help-typing span {
+      width: 5px;
+      height: 5px;
+      background: rgba(255,255,255,0.3);
+      border-radius: 50%;
+      animation: helpbounce 1s infinite;
+    }
+    .help-typing span:nth-child(2) { animation-delay: 0.15s; }
+    .help-typing span:nth-child(3) { animation-delay: 0.3s; }
+    @keyframes helpbounce { 0%,60%,100% { transform: translateY(0); } 30% { transform: translateY(-4px); } }
+    .help-chips {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      padding: 8px 12px 4px;
+      border-top: 1px solid rgba(255,255,255,0.06);
+      flex-shrink: 0;
+    }
+    .help-chip {
+      font-size: 11px;
+      color: rgba(255,255,255,0.4);
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,255,255,0.09);
+      border-radius: 20px;
+      padding: 3px 10px;
+      cursor: pointer;
+      transition: background 0.15s, color 0.15s, border-color 0.15s;
+      white-space: nowrap;
+    }
+    .help-chip:hover { background: rgba(255,255,255,0.09); color: rgba(255,255,255,0.8); border-color: rgba(255,255,255,0.18); }
+    .help-input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 12px 14px;
+      border-top: 1px solid rgba(255,255,255,0.07);
+      flex-shrink: 0;
+    }
+    .help-input {
+      flex: 1;
+      background: rgba(255,255,255,0.05);
+      border: 1px solid rgba(255,255,255,0.1);
+      border-radius: 8px;
+      padding: 7px 10px;
+      font-size: 12px;
+      font-family: 'Inter', sans-serif;
+      color: rgba(255,255,255,0.85);
+      outline: none;
+      resize: none;
+      line-height: 1.4;
+      max-height: 80px;
+      scrollbar-width: none;
+    }
+    .help-input::placeholder { color: rgba(255,255,255,0.2); }
+    .help-input:focus { border-color: rgba(255,255,255,0.18); }
+    .help-send-btn {
+      background: none;
+      border: 1px solid rgba(255,255,255,0.15);
+      color: rgba(255,255,255,0.35);
+      cursor: pointer;
+      font-size: 13px;
+      padding: 5px 8px;
+      border-radius: 7px;
+      flex-shrink: 0;
+      transition: color 0.15s;
+    }
+    .help-send-btn:hover:not(:disabled) { color: rgba(255,255,255,0.8); }
+    .help-send-btn:disabled { opacity: 0.25; cursor: not-allowed; }
     .fab-menu {
       display: flex;
       flex-direction: column;
@@ -1411,6 +1585,28 @@
     <button class="fab-menu-item" id="fab-add-knowledge"><i class="fa-solid fa-book"></i> Add Knowledge</button>
   </div>
   <button class="create-task-btn" id="create-task-btn"><i class="fa-solid fa-plus"></i></button>
+</div>
+
+<button class="help-btn" id="help-btn" title="Help"><i class="fa-solid fa-question"></i></button>
+
+<!-- Help panel -->
+<div class="help-panel" id="help-panel">
+  <div class="help-panel-header">
+    <span><i class="fa-solid fa-circle-question" style="margin-right:6px;opacity:0.5;"></i>Help</span>
+    <button class="help-panel-close" id="help-panel-close"><i class="fa-solid fa-xmark"></i></button>
+  </div>
+  <div class="help-messages" id="help-messages"></div>
+  <div class="help-chips" id="help-chips">
+    <button class="help-chip">Get me started</button>
+    <button class="help-chip">How do I create a task?</button>
+    <button class="help-chip">What are agents?</button>
+    <button class="help-chip">How does step-by-step work?</button>
+    <button class="help-chip">What is the knowledge base?</button>
+  </div>
+  <div class="help-input-row">
+    <textarea class="help-input" id="help-input" placeholder="Ask anything..." rows="1"></textarea>
+    <button class="help-send-btn" id="help-send-btn" disabled><i class="fa-solid fa-arrow-up"></i></button>
+  </div>
 </div>
 
 <!-- Add Knowledge overlay -->
@@ -2671,6 +2867,91 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
     document.getElementById('kn-all').checked = true;
     document.querySelectorAll('.kn-cell-cb').forEach(cb => { cb.checked = false; cb.disabled = true; });
   });
+
+  // ── Help panel ────────────────────────────────────────────────────────────
+  const helpPanel = document.getElementById('help-panel');
+  const helpBtn = document.getElementById('help-btn');
+  const helpPanelClose = document.getElementById('help-panel-close');
+  const helpMessages = document.getElementById('help-messages');
+  const helpInput = document.getElementById('help-input');
+  const helpSendBtn = document.getElementById('help-send-btn');
+
+  document.querySelectorAll('.help-chip').forEach(chip => {
+    chip.addEventListener('click', () => {
+      helpInput.value = chip.textContent;
+      helpInput.dispatchEvent(new Event('input'));
+      sendHelpMessage();
+    });
+  });
+
+  helpBtn.addEventListener('click', () => {
+    helpPanel.classList.toggle('open');
+    if (helpPanel.classList.contains('open')) {
+      if (!helpMessages.children.length) appendHelpMsg('agent', "Hi! I'm here to help. Ask me anything about how to use this workspace — task templates, agents, knowledge, or anything else.");
+      helpInput.focus();
+    }
+  });
+
+  helpPanelClose.addEventListener('click', () => helpPanel.classList.remove('open'));
+
+  helpInput.addEventListener('input', () => {
+    helpInput.style.height = 'auto';
+    helpInput.style.height = helpInput.scrollHeight + 'px';
+    helpSendBtn.disabled = !helpInput.value.trim();
+  });
+
+  helpInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendHelpMessage(); }
+  });
+
+  helpSendBtn.addEventListener('click', sendHelpMessage);
+
+  function appendHelpMsg(role, text) {
+    const msg = document.createElement('div');
+    msg.className = `help-msg ${role}`;
+    const bubble = document.createElement('div');
+    bubble.className = 'help-msg-bubble';
+    bubble.innerHTML = marked.parse(text);
+    msg.appendChild(bubble);
+    helpMessages.appendChild(msg);
+    helpMessages.scrollTop = helpMessages.scrollHeight;
+    return bubble;
+  }
+
+  function showHelpTyping() {
+    const msg = document.createElement('div');
+    msg.className = 'help-msg agent';
+    msg.id = 'help-typing';
+    msg.innerHTML = '<div class="help-typing"><span></span><span></span><span></span></div>';
+    helpMessages.appendChild(msg);
+    helpMessages.scrollTop = helpMessages.scrollHeight;
+  }
+
+  function removeHelpTyping() {
+    document.getElementById('help-typing')?.remove();
+  }
+
+  async function sendHelpMessage() {
+    const text = helpInput.value.trim();
+    if (!text) return;
+    helpInput.value = '';
+    helpInput.style.height = 'auto';
+    helpSendBtn.disabled = true;
+    appendHelpMsg('user', text);
+    showHelpTyping();
+    try {
+      const result = await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'get_help', query: text }),
+        "{{ host }}"
+      );
+      const answer = result?.data?.json?.answer ?? result?.json?.answer ?? 'Sorry, I could not get a response.';
+      removeHelpTyping();
+      appendHelpMsg('agent', answer);
+    } catch (e) {
+      removeHelpTyping();
+      appendHelpMsg('agent', `Error: ${e.message || e}`);
+    }
+  }
 
 </script>
 
