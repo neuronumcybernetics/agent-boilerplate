@@ -114,6 +114,18 @@ async def handle_tx(cell, tx: dict):
         sender = tx.get("sender", "")
         server_host = cell.host or cell.env.get("HOST", "")
         agent_id = data.get("agent_id", "")
+        auth = data.get("auth", "")
+        api_key = auth.get("api_key", "")
+
+        if api_key != "user_api_key":
+            logging.warning(f"Access denied - Wrong API Key: '{sender}'")
+            answer = "Access denied - Wrong API Key"
+            await cell.tx_response(
+                tx_id=tx.get("tx_id"),
+                data={"json": {"answer": answer}},
+                client_public_key_str=data.get("public_key", "")
+            )
+            return
 
         if not is_authorized(sender, server_host, agent_id):
             logging.warning(f"Access denied: '{sender}'")
