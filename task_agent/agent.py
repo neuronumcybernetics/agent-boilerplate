@@ -44,8 +44,9 @@ def is_authorized(sender: str, server_host: str, agent_id: str) -> bool:
 
 MAX_ITERATIONS = 10
 
-async def run_agent(query: str, context: str, handle: str = "") -> str:
+async def run_agent(query: str, context: str, handle: str = "") -> dict:
     llm = get_model()
+    accumulated_data = {}
 
     async with mcp_client:
         tool_list = await mcp_client.list_tools()
@@ -98,12 +99,18 @@ async def run_agent(query: str, context: str, handle: str = "") -> str:
                 try:
                     tool_result = await mcp_client.call_tool(tool_name, tool_args)
                     messages.append({"role": "user", "content": f"Tool '{tool_name}' returned: {str(tool_result.data or '')}"})
+
+                    # Accumulate tool data
+                    if tool_result.data:
+                        if tool_name not in accumulated_data:
+                            accumulated_data[tool_name] = []
+                        accumulated_data[tool_name].append(tool_result.data)
                 except Exception as e:
                     messages.append({"role": "user", "content": f"Tool '{tool_name}' failed: {e}"})
             else:
-                return reply
+                return {"answer": reply, "data": accumulated_data}
 
-    return "I was unable to complete the task."
+    return {"answer": "I was unable to complete the task.", "data": accumulated_data}
 
 
 # ── Agent ─────────────────────────────────────────────────────────────────────
@@ -131,10 +138,10 @@ async def handle_tx(cell, tx: dict):
             logging.warning(f"Access denied: '{sender}'")
             return
 
-        answer = await run_agent(data.get("query", ""), data.get("context", ""), data.get("handle", ""))
+        result = await run_agent(data.get("query", ""), data.get("context", ""), data.get("handle", ""))
         await cell.tx_response(
             tx_id=tx.get("tx_id"),
-            data={"json": {"answer": answer}},
+            data={"json": {"answer": result["answer"], "data": result["data"]}},
             client_public_key_str=data.get("public_key", "")
         )
 
