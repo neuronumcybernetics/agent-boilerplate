@@ -212,6 +212,198 @@
     .send-btn:hover:not(:disabled) { color: rgba(255, 255, 255, 0.8); }
     .send-btn:disabled { opacity: 0.25; cursor: not-allowed; }
 
+    /* ── Agent badge dropdown ────────────────────────────────────────────────── */
+
+    .agent-badge-wrapper {
+      display: flex;
+      align-items: center;
+      position: relative;
+      flex-shrink: 0;
+      margin: 0 8px;
+    }
+
+    .agent-badge {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      padding: 4px 10px;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.6);
+      cursor: pointer;
+      transition: all 0.2s;
+      user-select: none;
+      white-space: nowrap;
+    }
+
+    .agent-badge:hover {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.18);
+      color: rgba(255, 255, 255, 0.8);
+    }
+
+    .agent-badge.active {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .agent-badge-icon {
+      font-size: 9px;
+      transition: transform 0.2s;
+    }
+
+    .agent-badge.active .agent-badge-icon {
+      transform: rotate(180deg);
+    }
+
+    .agent-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(20, 20, 20, 0.98);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      border-radius: 12px;
+      padding: 8px;
+      min-width: 280px;
+      max-width: 360px;
+      max-height: 400px;
+      display: flex;
+      flex-direction: column;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.2s, transform 0.2s;
+      transform: translateX(-50%) translateY(-4px);
+      z-index: 100;
+      backdrop-filter: blur(12px);
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.4);
+    }
+
+    .agent-dropdown.open {
+      opacity: 1;
+      pointer-events: all;
+      transform: translateX(-50%) translateY(0);
+    }
+
+    .agent-search-wrapper {
+      padding: 4px;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+      margin-bottom: 4px;
+    }
+
+    .agent-search-input {
+      width: 100%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      border-radius: 8px;
+      padding: 8px 10px;
+      font-size: 12px;
+      color: rgba(255, 255, 255, 0.8);
+      outline: none;
+      font-family: 'Inter', sans-serif;
+      transition: border-color 0.15s, background 0.15s;
+    }
+
+    .agent-search-input::placeholder {
+      color: rgba(255, 255, 255, 0.3);
+    }
+
+    .agent-search-input:focus {
+      background: rgba(255, 255, 255, 0.08);
+      border-color: rgba(255, 255, 255, 0.2);
+    }
+
+    .agent-list-wrapper {
+      overflow-y: auto;
+      flex: 1;
+    }
+
+    .agent-list-wrapper::-webkit-scrollbar {
+      width: 6px;
+    }
+
+    .agent-list-wrapper::-webkit-scrollbar-track {
+      background: rgba(255, 255, 255, 0.05);
+      border-radius: 3px;
+    }
+
+    .agent-list-wrapper::-webkit-scrollbar-thumb {
+      background: rgba(255, 255, 255, 0.2);
+      border-radius: 3px;
+    }
+
+    .agent-dropdown-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 10px;
+      border-radius: 8px;
+      cursor: pointer;
+      transition: background 0.15s;
+    }
+
+    .agent-dropdown-item:hover {
+      background: rgba(255, 255, 255, 0.08);
+    }
+
+    .agent-dropdown-item.selected {
+      background: rgba(255, 255, 255, 0.12);
+    }
+
+    .agent-dropdown-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.07);
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      flex-shrink: 0;
+      overflow: hidden;
+    }
+
+    .agent-dropdown-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .agent-dropdown-info {
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .agent-dropdown-name {
+      font-size: 13px;
+      font-weight: 600;
+      color: rgba(255, 255, 255, 0.85);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .agent-dropdown-desc {
+      font-size: 11px;
+      color: rgba(255, 255, 255, 0.4);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin-top: 2px;
+    }
+
+    .agent-dropdown-divider {
+      height: 1px;
+      background: rgba(255, 255, 255, 0.08);
+      margin: 6px 0;
+    }
+
     /* ── Views ───────────────────────────────────────────────────────────────── */
 
     /* ── Task card ───────────────────────────────────────────────────────────── */
@@ -1518,6 +1710,143 @@
     }
     .ct-save-btn:hover { background: rgba(255,255,255,0.13); }
 
+    /* Agent Access Panel Styles */
+    .agent-access-item {
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: 10px;
+      padding: 16px;
+      background: rgba(255,255,255,0.02);
+    }
+    .agent-access-header {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+    .agent-access-logo {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      object-fit: cover;
+      flex-shrink: 0;
+    }
+    .agent-access-logo-placeholder {
+      width: 32px;
+      height: 32px;
+      border-radius: 6px;
+      background: rgba(255,255,255,0.05);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+    }
+    .agent-access-info { flex: 1; }
+    .agent-access-name {
+      font-size: 13px;
+      font-weight: 500;
+      color: rgba(255,255,255,0.8);
+    }
+    .agent-access-desc {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      margin-top: 2px;
+    }
+    .agent-access-author {
+      font-size: 11px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 2px;
+    }
+    .agent-access-auth {
+      font-size: 11px;
+      color: rgba(255,200,100,0.7);
+      margin-top: 8px;
+      padding: 10px 12px;
+      background: rgba(255,200,100,0.04);
+      border-radius: 6px;
+      border: 1px solid rgba(255,200,100,0.15);
+    }
+    .agent-access-auth-title {
+      font-weight: 500;
+      margin-bottom: 8px;
+      font-size: 10px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: rgba(255,200,100,0.8);
+    }
+    .agent-access-auth-field {
+      margin-bottom: 6px;
+    }
+    .agent-access-auth-field:last-child {
+      margin-bottom: 0;
+    }
+    .agent-access-auth-input {
+      width: 100%;
+      padding: 6px 10px;
+      background: rgba(255,255,255,0.04);
+      border: 1px solid rgba(255,200,100,0.2);
+      border-radius: 6px;
+      color: rgba(255,255,255,0.9);
+      font-size: 11px;
+      font-family: monospace;
+      transition: border-color 0.15s, background 0.15s;
+    }
+    .agent-access-auth-input::placeholder {
+      color: rgba(255,200,100,0.5);
+    }
+    .agent-access-auth-input:focus {
+      border-color: rgba(255,200,100,0.4);
+      background: rgba(255,255,255,0.06);
+      outline: none;
+    }
+    .agent-access-legal {
+      font-size: 10px;
+      color: rgba(255,255,255,0.25);
+      margin-top: 6px;
+      display: flex;
+      gap: 10px;
+    }
+    .agent-access-legal a {
+      color: rgba(100,150,255,0.6);
+      text-decoration: none;
+      transition: color 0.15s;
+    }
+    .agent-access-legal a:hover {
+      color: rgba(100,150,255,0.8);
+      text-decoration: underline;
+    }
+    .agent-access-field-label {
+      font-size: 11px;
+      color: rgba(255,255,255,0.35);
+      margin-bottom: 8px;
+      display: block;
+    }
+    .agent-employee-checkboxes {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      max-height: 200px;
+      overflow-y: auto;
+      padding: 2px;
+    }
+    .agent-employee-checkboxes label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 12px;
+      color: rgba(255,255,255,0.6);
+      cursor: pointer;
+      padding: 4px 6px;
+      border-radius: 5px;
+      transition: background 0.15s;
+    }
+    .agent-employee-checkboxes label:hover {
+      background: rgba(255,255,255,0.03);
+    }
+    .agent-employee-checkboxes input[type="checkbox"] {
+      margin: 0;
+    }
+
   </style>
 </head>
 <body>
@@ -1567,6 +1896,15 @@
         <div class="input-row">
           <button class="attach-btn" id="upload-btn" title="Attach file"><i class="fa-solid fa-paperclip"></i></button>
           <textarea id="input" placeholder="Tackle your task..." rows="1"></textarea>
+          <div class="agent-badge-wrapper">
+            <div class="agent-badge" id="agent-badge">
+              <span id="agent-badge-text">Business Agent</span>
+              <i class="fa-solid fa-chevron-down agent-badge-icon"></i>
+            </div>
+            <div class="agent-dropdown" id="agent-dropdown">
+              <!-- Agent items will be populated here by JavaScript -->
+            </div>
+          </div>
           <button class="send-btn" id="send-btn" title="Send"><i class="fa-solid fa-arrow-up"></i></button>
         </div>
       </div>
@@ -1580,6 +1918,7 @@
 <div class="fab-wrap">
   <div class="fab-menu" id="fab-menu">
     {% if access_level == 'admin' %}
+    <button class="fab-menu-item" id="fab-manage-agent-access"><i class="fa-solid fa-user-shield"></i> Agent Access</button>
     <button class="fab-menu-item" id="fab-create-template"><i class="fa-solid fa-layer-group"></i> Create Template</button>
     {% endif %}
     <button class="fab-menu-item" id="fab-add-knowledge"><i class="fa-solid fa-book"></i> Add Knowledge</button>
@@ -1686,7 +2025,7 @@
       <label>Agents <span id="ct-agents-count" style="color:rgba(255,255,255,0.25);font-size:10px;margin-left:4px;"></span></label>
       <input class="ct-filter-input" type="text" placeholder="Filter agents..." id="ct-agents-filter" />
       <div class="ct-checkboxes" id="ct-agents">
-        {% for a in agents %}
+        {% for a in all_agents %}
         <label class="ct-checkbox-row">
           <input type="checkbox" value="{{ a.agent_id }}" />
           {% if a.logo %}
@@ -1749,6 +2088,34 @@
     </div>
   </div>
 </div>
+
+<!-- Manage Agent Access panel -->
+<div class="create-task-overlay" id="manage-agent-access-overlay">
+  <div class="create-task-panel" style="max-width:800px;">
+    <h3>Manage Agent Access</h3>
+    <p style="font-size:11px;color:rgba(255,255,255,0.35);margin-bottom:16px;">
+      Control which employees can access each agent. By default, agents have no access. Select "All employees" to grant access to everyone, or choose specific employees.
+    </p>
+
+    <div class="ct-field">
+      <input
+        type="text"
+        id="agent-access-filter"
+        class="ct-filter-input"
+        placeholder="Filter agents..."
+      />
+    </div>
+
+    <div id="agent-access-list" style="display:flex;flex-direction:column;gap:16px;max-height:500px;overflow-y:auto;">
+      <!-- Agent access items will be inserted here by JavaScript -->
+    </div>
+
+    <div class="ct-actions">
+      <button class="ct-cancel-btn" id="manage-agent-access-cancel-btn">Cancel</button>
+      <button class="ct-save-btn" id="manage-agent-access-save-btn">Save Changes</button>
+    </div>
+  </div>
+</div>
 {% endif %}
 
 <!-- File modal -->
@@ -1764,11 +2131,173 @@
 
   const AGENT_MAP = {
     {% for a in agents %}
-    "{{ a.agent_id }}": { name: "{{ a.name | replace('"', '\\"') }}", logo: "{{ a.logo }}", description: "{{ a.description | replace('"', '\\"') }}", creator: "{{ a.creator }}", author: "{{ a.author }}", verified: {{ 'true' if a.verified else 'false' }} },
+    "{{ a.agent_id }}": { name: "{{ a.name | replace('"', '\\"') }}", logo: "{{ a.logo }}", description: "{{ a.description | replace('"', '\\"') }}", creator: "{{ a.creator }}", author: "{{ a.author }}", verified: {{ 'true' if a.verified else 'false' }}, auth: {{ a.auth | tojson }}, terms: "{{ a.terms }}", privacy_policy: "{{ a.privacy_policy }}" },
+    {% endfor %}
+  };
+
+  // All agents (unfiltered) - for admin management UI
+  const ALL_AGENTS_MAP = {
+    {% for a in all_agents %}
+    "{{ a.agent_id }}": { name: "{{ a.name | replace('"', '\\"') }}", logo: "{{ a.logo }}", description: "{{ a.description | replace('"', '\\"') }}", creator: "{{ a.creator }}", author: "{{ a.author }}", verified: {{ 'true' if a.verified else 'false' }}, auth: {{ a.auth | tojson }}, terms: "{{ a.terms }}", privacy_policy: "{{ a.privacy_policy }}" },
     {% endfor %}
   };
 
   const IS_ADMIN = {{ 'true' if access_level == 'admin' else 'false' }};
+
+  // ── Agent Badge & Dropdown ─────────────────────────────────────────────────
+
+  let selectedAgent = null;
+
+  function initAgentDropdown() {
+    const agentBadge = document.getElementById('agent-badge');
+    const agentDropdown = document.getElementById('agent-dropdown');
+    const agentBadgeText = document.getElementById('agent-badge-text');
+
+    if (!agentBadge || !agentDropdown) return;
+
+    // Create search wrapper
+    const searchWrapper = document.createElement('div');
+    searchWrapper.className = 'agent-search-wrapper';
+    searchWrapper.innerHTML = '<input type="text" class="agent-search-input" placeholder="Search agents..." />';
+    agentDropdown.appendChild(searchWrapper);
+
+    // Create list wrapper
+    const listWrapper = document.createElement('div');
+    listWrapper.className = 'agent-list-wrapper';
+    agentDropdown.appendChild(listWrapper);
+
+    const searchInput = searchWrapper.querySelector('.agent-search-input');
+
+    // Populate dropdown with agents
+    const agents = Object.entries(AGENT_MAP).map(([id, data]) => ({ id, ...data }));
+
+    // Add "None" option (Business Agent default)
+    const noneItem = document.createElement('div');
+    noneItem.className = 'agent-dropdown-item';
+    noneItem.dataset.agentId = '';
+    noneItem.dataset.agentName = 'business agent default';
+    noneItem.innerHTML = `
+      <div class="agent-dropdown-info">
+        <div class="agent-dropdown-name">Business Agent (Default)</div>
+        <div class="agent-dropdown-desc">Access to knowledge base and general assistance</div>
+      </div>
+    `;
+    noneItem.addEventListener('click', () => {
+      selectedAgent = null;
+      agentBadgeText.textContent = 'Business Agent';
+      listWrapper.querySelectorAll('.agent-dropdown-item').forEach(i => i.classList.remove('selected'));
+      noneItem.classList.add('selected');
+      agentDropdown.classList.remove('open');
+      agentBadge.classList.remove('active');
+      searchInput.value = '';
+    });
+    listWrapper.appendChild(noneItem);
+
+    // Add divider
+    if (agents.length > 0) {
+      const divider = document.createElement('div');
+      divider.className = 'agent-dropdown-divider';
+      listWrapper.appendChild(divider);
+    }
+
+    // Add agent items
+    agents.forEach(agent => {
+      const item = document.createElement('div');
+      item.className = 'agent-dropdown-item';
+      item.dataset.agentId = agent.id;
+      item.dataset.agentName = (agent.name || agent.id).toLowerCase();
+      item.dataset.agentDesc = (agent.description || agent.creator || '').toLowerCase();
+
+      const logoHtml = agent.logo
+        ? `<div class="agent-dropdown-logo"><img src="${agent.logo}" alt="${agent.name}" /></div>`
+        : `<div class="agent-dropdown-logo">🤖</div>`;
+
+      const verifiedBadge = agent.verified
+        ? '<span class="verified-badge" style="font-size:10px;"><i class="fa-solid fa-circle-check"></i></span>'
+        : '';
+
+      item.innerHTML = `
+        ${logoHtml}
+        <div class="agent-dropdown-info">
+          <div class="agent-dropdown-name">${agent.name || agent.id}${verifiedBadge}</div>
+          <div class="agent-dropdown-desc">${agent.description || agent.creator || ''}</div>
+        </div>
+      `;
+
+      item.addEventListener('click', () => {
+        selectedAgent = {
+          agent_id: agent.id,
+          name: agent.name || agent.id,
+          creator: agent.creator || '',
+          handle: ''
+        };
+        agentBadgeText.textContent = agent.name || agent.id;
+        listWrapper.querySelectorAll('.agent-dropdown-item').forEach(i => i.classList.remove('selected'));
+        item.classList.add('selected');
+        agentDropdown.classList.remove('open');
+        agentBadge.classList.remove('active');
+        searchInput.value = '';
+      });
+
+      listWrapper.appendChild(item);
+    });
+
+    // Search functionality
+    searchInput.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase().trim();
+      const items = listWrapper.querySelectorAll('.agent-dropdown-item');
+
+      items.forEach(item => {
+        const name = item.dataset.agentName || '';
+        const desc = item.dataset.agentDesc || '';
+        const matches = name.includes(query) || desc.includes(query);
+        item.style.display = matches ? '' : 'none';
+      });
+    });
+
+    // Prevent search input click from bubbling
+    searchInput.addEventListener('click', (e) => {
+      e.stopPropagation();
+    });
+
+    // Toggle dropdown
+    agentBadge.addEventListener('click', (e) => {
+      e.stopPropagation();
+      const isOpen = agentDropdown.classList.contains('open');
+      agentDropdown.classList.toggle('open');
+      agentBadge.classList.toggle('active');
+
+      if (!isOpen) {
+        // Opening dropdown - focus search input
+        setTimeout(() => searchInput.focus(), 100);
+      } else {
+        // Closing dropdown - clear search
+        searchInput.value = '';
+        listWrapper.querySelectorAll('.agent-dropdown-item').forEach(item => {
+          item.style.display = '';
+        });
+      }
+    });
+
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!agentBadge.contains(e.target) && !agentDropdown.contains(e.target)) {
+        agentDropdown.classList.remove('open');
+        agentBadge.classList.remove('active');
+        searchInput.value = '';
+        listWrapper.querySelectorAll('.agent-dropdown-item').forEach(item => {
+          item.style.display = '';
+        });
+      }
+    });
+  }
+
+  // Initialize agent dropdown when DOM is ready
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', initAgentDropdown);
+  } else {
+    initAgentDropdown();
+  }
 
   function openFileModal(src) {
     const body = document.getElementById('file-modal-body');
@@ -1931,7 +2460,7 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
         } else if (t._type === 'template') {
           const agentIds = Array.isArray(t.agents) ? t.agents : [];
           const logosHtml = agentIds.map(id => {
-            const a = AGENT_MAP[id];
+            const a = ALL_AGENTS_MAP[id] || AGENT_MAP[id];
             return a?.logo ? `<img src="${a.logo}" style="width:14px;height:14px;border-radius:3px;vertical-align:middle;margin-right:2px;opacity:0.7;" />` : '';
           }).join('');
           item.classList.add(IS_ADMIN ? 'has-actions' : '');
@@ -2236,29 +2765,40 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
 
   function renderFile({ name, data, mime }) {
     const title = name ? `<div class="file-name">${name}</div>` : '';
-    if (mime === 'text/csv') {
-      const rows = data.trim().split('\n').map(r => r.split(','));
-      const header = rows[0].map(h => `<th>${h}</th>`).join('');
-      const body = rows.slice(1).map(r => `<tr>${r.map(c => `<td>${c}</td>`).join('')}</tr>`).join('');
-      return `${title}<div class="task-csv-preview"><table><thead><tr>${header}</tr></thead><tbody>${body}</tbody></table></div>`;
-    }
-    if (mime.startsWith('image/')) return `${title}<img class="task-image-preview" src="data:${mime};base64,${data}" alt="" />`;
-    const label = mime.split('/')[1].toUpperCase();
-    return `${title}<div class="task-file-card" onclick="openFileModal('data:${mime};base64,${data}')"><i class="fa-regular fa-file"></i><span>${name || label} — click to open</span><i class="fa-solid fa-arrow-up-right-from-square"></i></div>`;
+    // All files (HTML, CSV converted to HTML, images in HTML) open in iframe modal
+    const label = mime === 'text/html' ? 'VIEW' : mime.split('/')[1].toUpperCase();
+    return `${title}<div class="task-file-card" onclick="openFileModal('data:${mime};base64,${data}')"><i class="fa-solid fa-file"></i><span>${name || label} — click to open</span><i class="fa-solid fa-arrow-up-right-from-square"></i></div>`;
   }
 
-  function setCardDone(card, answer, query, agentName, context = '', suggestions = null, files = null) {
+  function setCardDone(card, answer, query, agentName, context = '', suggestions = null, files = null, data = null) {
     card.classList.remove('active');
     card._exchange.push({ role: 'agent', text: answer });
 
 
     const filesHtml = files?.length ? files.map(renderFile).join('') : '';
 
+    // Render raw data if available
+    let dataHtml = '';
+    if (data && Object.keys(data).length > 0) {
+      const dataJson = JSON.stringify(data, null, 2);
+      dataHtml = `
+        <div style="margin-top: 12px; border-top: 1px solid rgba(255,255,255,0.1); padding-top: 12px;">
+          <details style="cursor: pointer;">
+            <summary style="font-size: 11px; color: rgba(255,255,255,0.5); margin-bottom: 8px; user-select: none;">
+              <i class="fa-solid fa-database"></i> Raw Data
+            </summary>
+            <pre style="background: rgba(0,0,0,0.3); padding: 12px; border-radius: 4px; font-size: 11px; overflow-x: auto; margin: 0;">${dataJson}</pre>
+          </details>
+        </div>
+      `;
+    }
+
     const resultEl = document.createElement('div');
     resultEl.innerHTML = `
       <div class="result-tag">&#x2713; Done</div>
       <div class="task-result">${marked.parse(answer)}</div>
       ${filesHtml}
+      ${dataHtml}
     `;
     card.querySelector('.task-status')?.replaceWith(resultEl);
 
@@ -2296,7 +2836,7 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
           setCardWorking(card);
           card.classList.add('active');
           const userMsg = { role: 'user', text: `[Consulted ${suggestion.agent_name}] ${query}` };
-          const { answer: newAnswer, files: newFiles } = await runSuperviseTask(suggestion, query, context);
+          const { answer: newAnswer, files: newFiles, data: newData } = await runSuperviseTask(suggestion, query, context);
           if (card._taskId) {
             window.parent.pywebview.api.activate_tx(
               JSON.stringify({ handle: 'append_messages', task_id: card._taskId, messages: [userMsg, { role: 'agent', text: newAnswer }] }),
@@ -2304,7 +2844,7 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
             ).catch(() => {});
           }
           card._exchange.push(userMsg);
-          setCardDone(card, newAnswer, query, suggestion.agent_name, context, null, newFiles);
+          setCardDone(card, newAnswer, query, suggestion.agent_name, context, null, newFiles, newData);
         });
         suggestionsEl.appendChild(row);
       }
@@ -2400,21 +2940,21 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
       try {
         const savedSuggestion = card._suggestion;
         if (savedSuggestion) {
-          const { answer: newAnswer, files: newFiles } = await runSuperviseTask(savedSuggestion, query, combinedContext);
+          const { answer: newAnswer, files: newFiles, data: newData } = await runSuperviseTask(savedSuggestion, query, combinedContext);
           if (card._taskId) {
             window.parent.pywebview.api.activate_tx(
               JSON.stringify({ handle: 'append_messages', task_id: card._taskId, messages: [{ role: 'user', text: query }, { role: 'agent', text: newAnswer }] }),
               "{{ host }}"
             ).catch(() => {});
           }
-          setCardDone(card, newAnswer, query, agentName, combinedContext, null, newFiles);
+          setCardDone(card, newAnswer, query, agentName, combinedContext, null, newFiles, newData);
         } else {
           const result = await window.parent.pywebview.api.activate_tx(
             JSON.stringify({ handle: 'get_followup', query, context: combinedContext, task_id: card._taskId }),
             "{{ host }}"
           );
           const json = result?.data?.json ?? result?.json ?? result ?? {};
-          setCardDone(card, json?.answer ?? JSON.stringify(json), query, agentName, combinedContext);
+          setCardDone(card, json?.answer ?? JSON.stringify(json), query, agentName, combinedContext, null, null, json?.data);
         }
       } catch (e) {
         setCardError(card, `Error: ${e.message || e}`);
@@ -2456,7 +2996,17 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
         );
         const json = result?.data?.json ?? result?.json ?? result ?? {};
         if (json?.task_id) card._taskId = json.task_id;
-        setCardDone(card, json?.answer ?? '', query, template.name, context);
+        setCardDone(card, json?.answer ?? '', query, template.name, context, null, json?.files, json?.data);
+      } else if (selectedAgent) {
+        // Use selected agent from dropdown with get_answer
+        const result = await window.parent.pywebview.api.activate_tx(
+          JSON.stringify({ handle: 'get_answer', query, context, target_agent: selectedAgent.agent_id }),
+          "{{ host }}"
+        );
+        const json = result?.data?.json ?? result?.json ?? result ?? {};
+        const answer = json?.answer ?? JSON.stringify(json);
+        if (json?.task_id) card._taskId = json.task_id;
+        setCardDone(card, answer, query, selectedAgent.name, context, null, json?.files, json?.data);
       } else {
         const result = await window.parent.pywebview.api.activate_tx(
           JSON.stringify({ handle: 'get_answer', query, context }),
@@ -2465,7 +3015,7 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
         const json = result?.data?.json ?? result?.json ?? result ?? {};
         const answer = json?.answer ?? JSON.stringify(json);
         if (json?.task_id) card._taskId = json.task_id;
-        setCardDone(card, answer, query, 'Team Agent', '', null);
+        setCardDone(card, answer, query, 'Team Agent', '', null, json?.files, json?.data);
       }
     } catch (e) {
       setCardError(card, `Error: ${e.message || e}`);
@@ -2484,9 +3034,9 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
         suggestion.creator
       );
       const json = result?.data?.json ?? result?.json ?? result ?? {};
-      return { answer: json?.answer ?? JSON.stringify(result), files: json?.files ?? null };
+      return { answer: json?.answer ?? JSON.stringify(result), files: json?.files ?? null, data: json?.data };
     } catch (e) {
-      return { answer: `Error: ${e.message || e}`, files: null };
+      return { answer: `Error: ${e.message || e}`, files: null, data: null };
     }
   }
 
@@ -2572,7 +3122,7 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
       const agentIds = Array.isArray(t.agents) ? t.agents : [];
       const logosHtml = agentIds.length
         ? `<div class="tt-agent-logos">${agentIds.map(id => {
-            const a = AGENT_MAP[id];
+            const a = ALL_AGENTS_MAP[id] || AGENT_MAP[id];
             return a?.logo
               ? `<img class="tt-agent-logo" src="${a.logo}" alt="${a.name || ''}" title="${a.name || ''}" />`
               : `<div class="tt-agent-logo-placeholder" title="${a?.name || id}">🤖</div>`;
@@ -2620,6 +3170,402 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
   // ── FAB menu ──────────────────────────────────────────────────────────────
   const fabMenu = document.getElementById('fab-menu');
   const createTaskBtn = document.getElementById('create-task-btn');
+
+  // Copy text to clipboard
+  function copyToClipboard(text) {
+    try {
+      // Modern clipboard API
+      if (navigator.clipboard) {
+        navigator.clipboard.writeText(text);
+      } else {
+        // Fallback for older browsers
+        const textarea = document.createElement('textarea');
+        textarea.value = text;
+        textarea.style.position = 'fixed';
+        textarea.style.opacity = '0';
+        document.body.appendChild(textarea);
+        textarea.select();
+        document.execCommand('copy');
+        document.body.removeChild(textarea);
+      }
+    } catch (e) {
+      console.error('Failed to copy to clipboard:', e);
+    }
+  }
+
+  // ── Manage Agent Access (admin) ─────────────────────────────────────────────
+  const manageAgentAccessOverlay = document.getElementById('manage-agent-access-overlay');
+  const manageAgentAccessCancelBtn = document.getElementById('manage-agent-access-cancel-btn');
+  const manageAgentAccessSaveBtn = document.getElementById('manage-agent-access-save-btn');
+
+  document.getElementById('fab-manage-agent-access')?.addEventListener('click', async () => {
+    // Load current access rules
+    let accessRules = {};
+    let authCredentials = {};
+    try {
+      const result = await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'get_agent_access_rules' }),
+        "{{ host }}"
+      );
+      accessRules = result?.json?.rules || {};
+    } catch (e) {
+      console.error('Failed to load agent access rules:', e);
+    }
+
+    // Load existing auth credentials
+    try {
+      const result = await window.parent.pywebview.api.activate_tx(
+        JSON.stringify({ handle: 'get_agent_auth_credentials' }),
+        "{{ host }}"
+      );
+      authCredentials = result?.json?.credentials || {};
+    } catch (e) {
+      console.error('Failed to load agent auth credentials:', e);
+    }
+
+    // Render agent access list
+    const agentAccessList = document.getElementById('agent-access-list');
+    agentAccessList.innerHTML = '';
+
+    // Get all cells from server-side template
+    const allCells = {{ (employees + cells) | tojson }};
+    const adminCellId = "{{ host }}";
+
+    // Include admin in the cells list so admin can grant themselves access
+    const filteredCells = allCells;
+
+    // Convert ALL_AGENTS_MAP (unfiltered) to array and iterate - for admin management
+    Object.entries(ALL_AGENTS_MAP).forEach(([agentId, agent]) => {
+      const agentRules = accessRules[agentId] || [];
+      const agentItem = document.createElement('div');
+      agentItem.className = 'agent-access-item';
+
+      const header = document.createElement('div');
+      header.className = 'agent-access-header';
+
+      if (agent.logo) {
+        const logo = document.createElement('img');
+        logo.src = agent.logo;
+        logo.className = 'agent-access-logo';
+        header.appendChild(logo);
+      } else {
+        const logoPlaceholder = document.createElement('div');
+        logoPlaceholder.className = 'agent-access-logo-placeholder';
+        logoPlaceholder.textContent = '🤖';
+        header.appendChild(logoPlaceholder);
+      }
+
+      const nameDiv = document.createElement('div');
+      nameDiv.className = 'agent-access-info';
+
+      // Agent name with verified badge
+      const agentName = document.createElement('div');
+      agentName.className = 'agent-access-name';
+      agentName.textContent = agent.name;
+
+      if (agent.verified) {
+        const verifiedBadge = document.createElement('span');
+        verifiedBadge.style.cssText = 'font-size:9px;color:rgba(80,200,120,0.8);margin-left:4px;';
+        verifiedBadge.textContent = '✓ verified';
+        agentName.appendChild(document.createTextNode(' '));
+        agentName.appendChild(verifiedBadge);
+      }
+
+      nameDiv.appendChild(agentName);
+
+      // Agent description
+      if (agent.description) {
+        const agentDesc = document.createElement('div');
+        agentDesc.className = 'agent-access-desc';
+        agentDesc.textContent = agent.description;
+        nameDiv.appendChild(agentDesc);
+      }
+
+      // Agent author
+      if (agent.author) {
+        const agentAuthor = document.createElement('div');
+        agentAuthor.className = 'agent-access-author';
+        agentAuthor.textContent = `by ${agent.author}`;
+        nameDiv.appendChild(agentAuthor);
+      }
+
+      // Legal links
+      if (agent.terms || agent.privacy_policy) {
+        const legalsDiv = document.createElement('div');
+        legalsDiv.className = 'agent-access-legal';
+
+        if (agent.terms) {
+          const termsLink = document.createElement('a');
+          termsLink.href = agent.terms;
+          termsLink.target = '_blank';
+          termsLink.rel = 'noopener noreferrer';
+          termsLink.textContent = 'Terms';
+          legalsDiv.appendChild(termsLink);
+        }
+
+        if (agent.privacy_policy) {
+          const privacyLink = document.createElement('a');
+          privacyLink.href = agent.privacy_policy;
+          privacyLink.target = '_blank';
+          privacyLink.rel = 'noopener noreferrer';
+          privacyLink.textContent = 'Privacy Policy';
+          legalsDiv.appendChild(privacyLink);
+        }
+
+        nameDiv.appendChild(legalsDiv);
+      }
+
+      // Auth information
+      if (agent.auth && Array.isArray(agent.auth) && agent.auth.length > 0) {
+        const authDiv = document.createElement('div');
+        authDiv.className = 'agent-access-auth';
+
+        const authTitle = document.createElement('div');
+        authTitle.className = 'agent-access-auth-title';
+        authTitle.textContent = 'Authentication Required';
+        authDiv.appendChild(authTitle);
+
+        // Create input fields for each auth parameter
+        const agentCreds = authCredentials[agentId] || {};
+        agent.auth.forEach(authParam => {
+          const authFieldWrapper = document.createElement('div');
+          authFieldWrapper.className = 'agent-access-auth-field';
+
+          const authInput = document.createElement('input');
+          authInput.type = authParam.toLowerCase().includes('secret') || authParam.toLowerCase().includes('password') ? 'password' : 'text';
+          authInput.placeholder = authParam.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase());
+          authInput.value = agentCreds[authParam] || '';  // Load existing credential
+          authInput.className = 'agent-auth-input agent-access-auth-input';
+          authInput.dataset.agentId = agentId;
+          authInput.dataset.authParam = authParam;
+
+          authFieldWrapper.appendChild(authInput);
+          authDiv.appendChild(authFieldWrapper);
+        });
+
+        nameDiv.appendChild(authDiv);
+      }
+
+      header.appendChild(nameDiv);
+      agentItem.appendChild(header);
+
+      const accessLabel = document.createElement('label');
+      accessLabel.className = 'agent-access-field-label';
+      accessLabel.textContent = 'Who can access this agent:';
+      agentItem.appendChild(accessLabel);
+
+      // Add employee filter input
+      const employeeFilter = document.createElement('input');
+      employeeFilter.type = 'text';
+      employeeFilter.placeholder = 'Filter employees...';
+      employeeFilter.className = 'ct-filter-input';
+      employeeFilter.style.marginBottom = '8px';
+      agentItem.appendChild(employeeFilter);
+
+      const checkboxContainer = document.createElement('div');
+      checkboxContainer.className = 'agent-employee-checkboxes';
+
+      // Add "No Access" checkbox (default)
+      const noAccessLabel = document.createElement('label');
+      const noAccessCheckbox = document.createElement('input');
+      noAccessCheckbox.type = 'checkbox';
+      noAccessCheckbox.value = '__none__';
+      noAccessCheckbox.checked = agentRules.length === 0;
+      noAccessCheckbox.className = 'agent-access-none';
+      noAccessCheckbox.dataset.agentId = agentId;
+      noAccessLabel.appendChild(noAccessCheckbox);
+      noAccessLabel.appendChild(document.createTextNode('No Access (default)'));
+      checkboxContainer.appendChild(noAccessLabel);
+
+      // Add "All employees" checkbox
+      const allLabel = document.createElement('label');
+      const allCheckbox = document.createElement('input');
+      allCheckbox.type = 'checkbox';
+      allCheckbox.value = '__all__';
+      allCheckbox.checked = agentRules.includes('__all__');
+      allCheckbox.className = 'agent-access-all';
+      allCheckbox.dataset.agentId = agentId;
+      allLabel.appendChild(allCheckbox);
+      allLabel.appendChild(document.createTextNode('All employees'));
+      checkboxContainer.appendChild(allLabel);
+
+      // Add employee checkboxes (excluding admin)
+      filteredCells.forEach(cell => {
+        const cellLabel = document.createElement('label');
+        const cellCheckbox = document.createElement('input');
+        cellCheckbox.type = 'checkbox';
+        cellCheckbox.value = cell.cell_id;
+        cellCheckbox.checked = agentRules.includes(cell.cell_id) && !agentRules.includes('__all__');
+        cellCheckbox.disabled = noAccessCheckbox.checked || allCheckbox.checked;
+        cellCheckbox.className = 'agent-access-cell';
+        cellCheckbox.dataset.agentId = agentId;
+        cellLabel.appendChild(cellCheckbox);
+        cellLabel.appendChild(document.createTextNode(cell.cell_id));
+        checkboxContainer.appendChild(cellLabel);
+      });
+
+      agentItem.appendChild(checkboxContainer);
+      agentAccessList.appendChild(agentItem);
+
+      // Add toggle behavior for "No Access"
+      noAccessCheckbox.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          allCheckbox.checked = false;
+          checkboxContainer.querySelectorAll('.agent-access-cell').forEach(cb => {
+            cb.checked = false;
+            cb.disabled = true;
+          });
+        } else {
+          checkboxContainer.querySelectorAll('.agent-access-cell').forEach(cb => {
+            cb.disabled = false;
+          });
+        }
+      });
+
+      // Add toggle behavior for "All employees"
+      allCheckbox.addEventListener('change', (e) => {
+        if (e.target.checked) {
+          noAccessCheckbox.checked = false;
+          checkboxContainer.querySelectorAll('.agent-access-cell').forEach(cb => {
+            cb.checked = false;
+            cb.disabled = true;
+          });
+        } else {
+          checkboxContainer.querySelectorAll('.agent-access-cell').forEach(cb => {
+            cb.disabled = false;
+          });
+        }
+      });
+
+      // When individual cell is checked, uncheck "No Access" and "All employees"
+      checkboxContainer.querySelectorAll('.agent-access-cell').forEach(cb => {
+        cb.addEventListener('change', () => {
+          if (cb.checked) {
+            noAccessCheckbox.checked = false;
+            allCheckbox.checked = false;
+          }
+        });
+      });
+
+      // Add employee filter functionality for this agent
+      employeeFilter.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        checkboxContainer.querySelectorAll('label').forEach(label => {
+          const text = label.textContent.toLowerCase();
+          // Always show "No Access" and "All employees" options
+          if (text.includes('no access') || text.includes('all employees')) {
+            label.style.display = '';
+          } else {
+            // Filter employee checkboxes
+            label.style.display = text.includes(query) ? '' : 'none';
+          }
+        });
+      });
+    });
+
+    // Add global agent filter functionality
+    const agentAccessFilter = document.getElementById('agent-access-filter');
+    agentAccessFilter.addEventListener('input', (e) => {
+      const query = e.target.value.toLowerCase();
+      document.querySelectorAll('#agent-access-list > div').forEach(agentDiv => {
+        const agentName = agentDiv.querySelector('.agent-access-name');
+        const agentDesc = agentDiv.querySelector('.agent-access-desc');
+        const agentAuthor = agentDiv.querySelector('.agent-access-author');
+        const name = agentName ? agentName.textContent.toLowerCase() : '';
+        const desc = agentDesc ? agentDesc.textContent.toLowerCase() : '';
+        const author = agentAuthor ? agentAuthor.textContent.toLowerCase() : '';
+        agentDiv.style.display = (name.includes(query) || desc.includes(query) || author.includes(query)) ? '' : 'none';
+      });
+    });
+
+    manageAgentAccessOverlay.classList.add('open');
+  });
+
+  if (manageAgentAccessOverlay) {
+    manageAgentAccessCancelBtn.addEventListener('click', () => manageAgentAccessOverlay.classList.remove('open'));
+    manageAgentAccessOverlay.addEventListener('click', (e) => {
+      if (e.target === manageAgentAccessOverlay) manageAgentAccessOverlay.classList.remove('open');
+    });
+
+    manageAgentAccessSaveBtn.addEventListener('click', async () => {
+      // Collect all access rules
+      const allAgents = [...new Set(document.querySelectorAll('.agent-access-none, .agent-access-all, .agent-access-cell'))].map(cb => cb.dataset.agentId);
+      const uniqueAgents = [...new Set(allAgents)];
+
+      console.log('Saving agent access rules for:', uniqueAgents);
+
+      try {
+        for (const agentId of uniqueAgents) {
+          const noAccessCheckbox = document.querySelector(`.agent-access-none[data-agent-id="${agentId}"]`);
+          const allCheckbox = document.querySelector(`.agent-access-all[data-agent-id="${agentId}"]`);
+          let cells = [];
+
+          if (noAccessCheckbox?.checked) {
+            // No access - empty array
+            cells = [];
+          } else if (allCheckbox?.checked) {
+            // All employees - special marker
+            cells = ['__all__'];
+          } else {
+            // Specific cells
+            cells = [...document.querySelectorAll(`.agent-access-cell[data-agent-id="${agentId}"]:checked`)].map(cb => cb.value);
+          }
+
+          console.log(`Agent ${agentId}: cells =`, cells);
+
+          // Collect auth credentials for this agent
+          const authInputs = document.querySelectorAll(`.agent-auth-input[data-agent-id="${agentId}"]`);
+          const authCredentials = {};
+          authInputs.forEach(input => {
+            const paramName = input.dataset.authParam;
+            const paramValue = input.value.trim();
+            if (paramValue) {
+              authCredentials[paramName] = paramValue;
+            }
+          });
+
+          console.log(`Agent ${agentId}: auth credentials =`, Object.keys(authCredentials));
+
+          // Update access rules
+          const result = await window.parent.pywebview.api.activate_tx(
+            JSON.stringify({ handle: 'update_agent_access_rules', target_agent_id: agentId, cells }),
+            "{{ host }}"
+          );
+          console.log(`Update result for ${agentId}:`, result);
+
+          // Update auth credentials if any were provided
+          if (Object.keys(authCredentials).length > 0) {
+            const authResult = await window.parent.pywebview.api.activate_tx(
+              JSON.stringify({ handle: 'update_agent_auth_credentials', target_agent_id: agentId, credentials: authCredentials }),
+              "{{ host }}"
+            );
+            console.log(`Auth update result for ${agentId}:`, authResult);
+          }
+        }
+
+        console.log('All agent access rules and auth credentials saved successfully');
+
+        // Close overlay and reload UI to reflect changes
+        manageAgentAccessOverlay.classList.remove('open');
+
+        // Reload the UI to get updated agent list
+        const uiResult = await window.parent.pywebview.api.activate_tx(
+          JSON.stringify({ handle: 'get_ui' }),
+          "{{ host }}"
+        );
+
+        // Replace page content with updated HTML
+        if (uiResult && JSON.parse(uiResult).html) {
+          document.open();
+          document.write(JSON.parse(uiResult).html);
+          document.close();
+        }
+      } catch (e) {
+        console.error('Failed to save agent access rules:', e);
+        alert('Failed to save agent access rules. Check console for details.');
+      }
+    });
+  }
 
   // ── Create Template (admin) ────────────────────────────────────────────────
   const createTaskOverlay = document.getElementById('create-task-overlay');
@@ -2724,7 +3670,7 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
       });
       // add newly checked (not yet in list)
       checkedIds.filter(id => !existing.includes(id)).forEach(id => {
-        const a = AGENT_MAP[id] || {};
+        const a = ALL_AGENTS_MAP[id] || AGENT_MAP[id] || {};
         const item = document.createElement('div');
         item.className = 'ct-order-item';
         item.dataset.agentId = id;
