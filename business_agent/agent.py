@@ -1211,9 +1211,10 @@ async def handle_get_ui(cell, tx: dict, access_level: str = "employee"):
     data = tx.get("data", {})
     template = template_env.get_template("agent.html")
     host = cell.host or cell.env.get("HOST", "")
-    operator = cell.env.get("OPERATOR", "")
     sender = tx.get("sender", "")
     all_cells = await cell.list_cells(True) or []
+    sender_cell = next((c for c in all_cells if c.get("cell_id") == sender), None)
+    operator = (sender_cell.get("operator", "") if sender_cell else "") or cell.env.get("OPERATOR", "")
     cells = [c for c in all_cells if "@" not in c.get("cell_id", "")]
     employees = [c for c in all_cells if "@" in c.get("cell_id", "")]
     raw_agents = await cell.list_agents() or []
