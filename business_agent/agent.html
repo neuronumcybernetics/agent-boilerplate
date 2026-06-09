@@ -238,6 +238,12 @@
       white-space: nowrap;
     }
 
+    #agent-badge-text {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
     .agent-badge:hover {
       background: rgba(255, 255, 255, 0.08);
       border-color: rgba(255, 255, 255, 0.18);
@@ -256,6 +262,24 @@
 
     .agent-badge.active .agent-badge-icon {
       transform: rotate(180deg);
+    }
+
+    .agent-badge-logo {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      flex-shrink: 0;
+    }
+
+    .agent-badge-logo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 4px;
     }
 
     .agent-dropdown {
@@ -1898,7 +1922,7 @@
           <textarea id="input" placeholder="Tackle your task..." rows="1"></textarea>
           <div class="agent-badge-wrapper">
             <div class="agent-badge" id="agent-badge">
-              <span id="agent-badge-text">Business Agent</span>
+              <div id="agent-badge-text"><span>Business Agent</span></div>
               <i class="fa-solid fa-chevron-down agent-badge-icon"></i>
             </div>
             <div class="agent-dropdown" id="agent-dropdown">
@@ -2184,7 +2208,7 @@
     `;
     noneItem.addEventListener('click', () => {
       selectedAgent = null;
-      agentBadgeText.textContent = 'Business Agent';
+      agentBadgeText.innerHTML = '<span>Business Agent</span>';
       listWrapper.querySelectorAll('.agent-dropdown-item').forEach(i => i.classList.remove('selected'));
       noneItem.classList.add('selected');
       agentDropdown.classList.remove('open');
@@ -2229,9 +2253,15 @@
           agent_id: agent.id,
           name: agent.name || agent.id,
           creator: agent.creator || '',
-          handle: ''
+          handle: '',
+          logo: agent.logo || null
         };
-        agentBadgeText.textContent = agent.name || agent.id;
+
+        // Update badge with logo and name
+        const logoHtml = agent.logo
+          ? `<div class="agent-badge-logo"><img src="${agent.logo}" alt="${agent.name}" /></div>`
+          : `<div class="agent-badge-logo">🤖</div>`;
+        agentBadgeText.innerHTML = logoHtml + `<span>${agent.name || agent.id}</span>`;
         listWrapper.querySelectorAll('.agent-dropdown-item').forEach(i => i.classList.remove('selected'));
         item.classList.add('selected');
         agentDropdown.classList.remove('open');
