@@ -3229,6 +3229,12 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
   const manageAgentAccessSaveBtn = document.getElementById('manage-agent-access-save-btn');
 
   document.getElementById('fab-manage-agent-access')?.addEventListener('click', async () => {
+    // Check if overlay exists (admin only feature)
+    if (!manageAgentAccessOverlay) {
+      console.error('Agent access panel not available');
+      return;
+    }
+
     // Load current access rules
     let accessRules = {};
     let authCredentials = {};
@@ -3255,6 +3261,10 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
 
     // Render agent access list
     const agentAccessList = document.getElementById('agent-access-list');
+    if (!agentAccessList) {
+      console.error('Agent access list element not found');
+      return;
+    }
     agentAccessList.innerHTML = '';
 
     // Get all cells from server-side template
@@ -3264,9 +3274,18 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
     // Include admin in the cells list so admin can grant themselves access
     const filteredCells = allCells;
 
-    // Convert ALL_AGENTS_MAP (unfiltered) to array and iterate - for admin management
-    Object.entries(ALL_AGENTS_MAP).forEach(([agentId, agent]) => {
-      const agentRules = accessRules[agentId] || [];
+    // Check if there are any agents
+    if (Object.keys(ALL_AGENTS_MAP).length === 0) {
+      agentAccessList.innerHTML = '<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.4);">No agents available. Please subscribe to agents first.</div>';
+      manageAgentAccessOverlay.classList.add('open');
+      return;
+    }
+
+    try {
+      // Convert ALL_AGENTS_MAP (unfiltered) to array and iterate - for admin management
+      Object.entries(ALL_AGENTS_MAP).forEach(([agentId, agent]) => {
+        // Access rules structure: { agent_id: { cells: [...], updated_at: "..." } }
+        const agentRules = accessRules[agentId]?.cells || [];
       const agentItem = document.createElement('div');
       agentItem.className = 'agent-access-item';
 
@@ -3491,22 +3510,33 @@ document.getElementById('file-modal').addEventListener('click', (e) => {
           }
         });
       });
-    });
+      });
+
+      // Show message if no agents were rendered
+      if (agentAccessList.children.length === 0) {
+        agentAccessList.innerHTML = '<div style="padding:20px;text-align:center;color:rgba(255,255,255,0.4);">No agents were rendered. Check console for errors.</div>';
+      }
+    } catch (e) {
+      console.error('Error building agent access UI:', e);
+      agentAccessList.innerHTML = `<div style="padding:20px;text-align:center;color:rgba(255,100,100,0.7);">Error loading agents: ${e.message}</div>`;
+    }
 
     // Add global agent filter functionality
     const agentAccessFilter = document.getElementById('agent-access-filter');
-    agentAccessFilter.addEventListener('input', (e) => {
-      const query = e.target.value.toLowerCase();
-      document.querySelectorAll('#agent-access-list > div').forEach(agentDiv => {
-        const agentName = agentDiv.querySelector('.agent-access-name');
-        const agentDesc = agentDiv.querySelector('.agent-access-desc');
-        const agentAuthor = agentDiv.querySelector('.agent-access-author');
-        const name = agentName ? agentName.textContent.toLowerCase() : '';
-        const desc = agentDesc ? agentDesc.textContent.toLowerCase() : '';
-        const author = agentAuthor ? agentAuthor.textContent.toLowerCase() : '';
-        agentDiv.style.display = (name.includes(query) || desc.includes(query) || author.includes(query)) ? '' : 'none';
+    if (agentAccessFilter) {
+      agentAccessFilter.addEventListener('input', (e) => {
+        const query = e.target.value.toLowerCase();
+        document.querySelectorAll('#agent-access-list > div').forEach(agentDiv => {
+          const agentName = agentDiv.querySelector('.agent-access-name');
+          const agentDesc = agentDiv.querySelector('.agent-access-desc');
+          const agentAuthor = agentDiv.querySelector('.agent-access-author');
+          const name = agentName ? agentName.textContent.toLowerCase() : '';
+          const desc = agentDesc ? agentDesc.textContent.toLowerCase() : '';
+          const author = agentAuthor ? agentAuthor.textContent.toLowerCase() : '';
+          agentDiv.style.display = (name.includes(query) || desc.includes(query) || author.includes(query)) ? '' : 'none';
+        });
       });
-    });
+    }
 
     manageAgentAccessOverlay.classList.add('open');
   });
